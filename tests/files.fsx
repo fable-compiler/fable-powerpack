@@ -1,0 +1,2 @@
+#load
+    "PromiseTests.fsx"

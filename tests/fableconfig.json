@@ -1,0 +1,9 @@
+{
+    "projFile": "files.fsx",
+    "outDir": "../build/tests",
+    "module": "commonjs",
+    "plugins": ["../node_modules/fable-plugins-nunit/Fable.Plugins.NUnit.dll"],
+    "scripts": {
+        "postbuild": "node ../node_modules/mocha/bin/mocha ../build/tests"
+    }
+}
