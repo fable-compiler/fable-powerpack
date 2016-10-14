@@ -1,3 +1,7 @@
+### 0.0.4
+
+* Import "fable-core/es2015" in ES2015 modules
+
 ### 0.0.3
 
 * Include files compiled with ES2015 modules in the npm package

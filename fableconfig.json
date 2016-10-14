@@ -7,6 +7,7 @@
     },
     "targets": {
         "next": {
+            "coreLib": "fable-core/es2015",
             "outDir": "npm/es2015",
             "module": "es2015"
         }
