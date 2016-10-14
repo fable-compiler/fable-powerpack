@@ -27,7 +27,6 @@
     "fable-core": "^0.7.1-alpha"
   },
   "devDependencies": {
-    "fable-plugins-nunit": "^0.6.0",
     "mocha": "^3.1.2"
   }
 }

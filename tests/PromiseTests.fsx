@@ -3,37 +3,50 @@
 
 open System
 open Fable.PowerPack
-open Fable.Core.Testing
+open Fable.Core
+open Fable.Core.JsInterop
 
-let equal (expected: 'T) (actual: 'T) =
-    Assert.AreEqual(expected, actual)
+let assert' = importAll<obj> "assert"
 
-[<Test>]
-let ``Simple promise translates without exception``() =
+let inline equal (expected: 'T) (actual: 'T): unit =
+    assert'?equal(actual, expected) |> ignore
+
+[<Global>]
+let it (msg: string) (f: unit->Promise<'T>): unit = jsNative
+
+it "Simple promise translates without exception" <| fun () ->
     promise { return () }
-    |> ignore
 
-[<Test>]
-let ``Promise for binding works correctly``() =
+it "PromiseBuilder.Combine works" <| fun () ->
+    let nums = [|1;2;3;4;5|]
+    promise {
+        let mutable xs = []
+        for x in nums do
+            let x = x + 1
+            if x < 5 then
+                xs <- x::xs
+        return xs
+    }
+    |> Promise.map (fun xs -> xs = [4;3;2] |> equal true)
+
+it "Promise for binding works correctly" <| fun () ->
     let inputs = [|1; 2; 3|]
     let result = ref 0
     promise { 
         for inp in inputs do
             result := !result + inp
     }
-    |> Promise.iter (fun () -> equal !result 6)
+    |> Promise.map (fun () -> equal !result 6)
 
-[<Test>]
-let ``Promise while binding works correctly``() =
+it "Promise while binding works correctly" <| fun () ->
     let mutable result = 0
     promise { 
         while result < 10 do
             result <- result + 1
     }
-    |> Promise.iter (fun () -> equal result 10)
+    |> Promise.map (fun () -> equal result 10)
 
-[<Test>]
-let ``Promise exceptions are handled correctly``() =
+it "Promise exceptions are handled correctly" <| fun () ->
     let result = ref 0
     let f shouldThrow =
         promise { 
@@ -46,10 +59,9 @@ let ``Promise exceptions are handled correctly``() =
         let! x = f true
         let! y = f false
         return x + y
-    } |> Promise.iter (equal 22)  
+    } |> Promise.map (equal 22)  
 
-[<Test>]
-let ``Simple promise is executed correctly``() =
+it "Simple promise is executed correctly" <| fun () ->
     let result = ref false
     let x = promise { return 99 }
     promise { 
@@ -57,14 +69,13 @@ let ``Simple promise is executed correctly``() =
         let y = 99
         result := x = y
     }
-    |> Promise.iter (fun () -> equal !result true)
+    |> Promise.map (fun () -> equal !result true)
 
 type DisposableAction(f) =
     interface IDisposable with
         member __.Dispose() = f()
 
-[<Test>]
-let ``promise use statements should dispose of resources when they go out of scope``() =
+it "promise use statements should dispose of resources when they go out of scope" <| fun () ->
     let isDisposed = ref false
     let step1ok = ref false
     let step2ok = ref false
@@ -75,12 +86,11 @@ let ``promise use statements should dispose of resources when they go out of sco
         use! r = resource
         step1ok := not !isDisposed
     }
-    |> Promise.iter (fun () ->
+    |> Promise.map (fun () ->
         step2ok := !isDisposed
         (!step1ok && !step2ok) |> equal true)
 
-[<Test>]
-let ``Try ... with ... expressions inside promise expressions work the same``() =
+it "Try ... with ... expressions inside promise expressions work the same" <| fun () ->
     let result = ref ""
     let throw() : unit =
         raise(exn "Boo!")
@@ -100,21 +110,19 @@ let ``Try ... with ... expressions inside promise expressions work the same``() 
         try do! innerPromise()
         with _ -> append "2"
         append "f"
-    } |> Promise.iter (fun () ->
+    } |> Promise.map (fun () ->
         equal !result "abcdef")
 
-[<Test>]
-let ``Promise try .. with returns correctly from 'with' branch``() =
+it "Promise try .. with returns correctly from 'with' branch" <| fun () ->
     let work = promise { 
         try 
           failwith "testing"
           return -1
         with e ->
           return 42 }
-    work |> Promise.iter (equal 42)
+    work |> Promise.map (equal 42)
 
-// [<Test>]
-// let ``Deep recursion with promise doesn't cause stack overflow``() =
+// it "Deep recursion with promise doesn't cause stack overflow" <| fun () ->
 //     promise {
 //         let result = ref false
 //         let rec trampolineTest res i = promise {
@@ -124,10 +132,9 @@ let ``Promise try .. with returns correctly from 'with' branch``() =
 //         }
 //         do! trampolineTest result 0
 //         equal !result true
-//     } |> Promise.iter ignore
+//     } |> Promise.map ignore
 
-[<Test>]
-let ``Nested failure propagates in promise expressions``() =
+it "Nested failure propagates in promise expressions" <| fun () ->
     promise {
         let data = ref ""
         let f1 x = 
@@ -156,10 +163,9 @@ let ``Nested failure propagates in promise expressions``() =
         do! f()
         do! Promise.sleep 100
         equal "3 2 1" !data
-    } |> Promise.iter ignore
+    } |> Promise.map ignore
 
-[<Test>]
-let ``Try .. finally expressions inside promise expressions work``() =
+it "Try .. finally expressions inside promise expressions work" <| fun () ->
     promise {
         let data = ref ""
         do! promise {
@@ -174,10 +180,9 @@ let ``Try .. finally expressions inside promise expressions work``() =
         }
         do! Promise.sleep 100
         equal "1 2 3" !data
-    } |> Promise.iter ignore
+    } |> Promise.map ignore
 
-[<Test>]
-let ``Final statement inside promise expressions can throw``() =
+it "Final statement inside promise expressions can throw" <| fun () ->
     promise {
         let data = ref ""
         let f() = promise {
@@ -193,4 +198,4 @@ let ``Final statement inside promise expressions can throw``() =
         }
         do! Promise.sleep 100
         equal "1 boom!" !data
-    } |> Promise.iter ignore
+    } |> Promise.map ignore

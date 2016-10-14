@@ -54,7 +54,7 @@ Target "Build" (fun _ ->
     Util.run "npm" "npm" ("version " + release.NugetVersion)
 )
 
-Target "Test" (fun () ->
+let mochaTest() =
     let devTestPkg = "build/tests/node_modules" </> npmPkgName
     CleanDir "build/tests"
 
@@ -64,6 +64,13 @@ Target "Test" (fun () ->
 
     // Tests will be run by fableconfig postbuild script    
     Util.run "." "fable" "tests/"
+
+Target "Test" (fun () ->
+    mochaTest()
+)
+
+Target "TestOnly" (fun () ->
+    mochaTest()
 )
 
 Target "All" DoNothing
