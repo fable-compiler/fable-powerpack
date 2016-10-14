@@ -4,5 +4,11 @@
     "module": "commonjs",
     "scripts": {
         "prebuild": "npm install"
-    }  
+    },
+    "targets": {
+        "next": {
+            "outDir": "npm/es2015",
+            "module": "es2015"
+        }
+    }
 }

@@ -46,6 +46,9 @@ Target "Build" (fun _ ->
     // Compile to JS
     Util.run "." "fable" ""
 
+    // Compile to JS with ES2015 modules
+    Util.run "." "fable" "--target next"
+
     // Copy README and package.json
     FileUtils.cp "README.md" "npm"
     FileUtils.cp "package.json" "npm"
