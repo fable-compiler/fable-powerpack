@@ -47,10 +47,10 @@ Target "Build" (fun _ ->
     )
 
     // Compile to JS
-    Util.run "." "fable" ""
+    Util.run "." "npm" "run build"
 
     // Compile to JS with ES2015 modules
-    Util.run "." "fable" "--target next"
+    Util.run "." "npm" "run build -- --target next"
 
     // Copy README and package.json
     FileUtils.cp "README.md" "npm"
@@ -69,7 +69,7 @@ let mochaTest() =
     !! "npm/*.js" |> Seq.iter (fun file -> FileUtils.cp file devTestPkg)
 
     // Tests will be run by fableconfig postbuild script    
-    Util.run "." "fable" "tests/"
+    Util.run "." "npm" "run build -- tests/"
 
 Target "Test" (fun () ->
     mochaTest()
