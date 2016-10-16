@@ -1,3 +1,7 @@
+### 0.0.5
+
+* Add sourcemaps
+
 ### 0.0.4
 
 * Import "fable-core/es2015" in ES2015 modules
