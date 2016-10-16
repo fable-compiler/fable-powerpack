@@ -27,6 +27,9 @@ Target "Clean" (fun _ ->
 )
 
 Target "Build" (fun _ ->
+    // Install dependencies from npm (like Fable.Core)
+    Util.run "." "npm" "install"
+
     !! ("src" </> (projName + ".fsproj"))
     |> MSBuild "npm" "Build" [
         "Configuration", "Release"

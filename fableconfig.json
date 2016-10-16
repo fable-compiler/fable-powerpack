@@ -2,9 +2,6 @@
     "projFile": "src/Fable.PowerPack.fsproj",
     "outDir": "npm",
     "module": "commonjs",
-    "scripts": {
-        "prebuild": "npm install"
-    },
     "targets": {
         "next": {
             "coreLib": "fable-core/es2015",
