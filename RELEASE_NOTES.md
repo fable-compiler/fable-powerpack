@@ -1,3 +1,7 @@
+### 0.0.7
+
+* Use relative path with `EntryModuleAttribute`
+
 ### 0.0.6
 
 * Update fable-core version

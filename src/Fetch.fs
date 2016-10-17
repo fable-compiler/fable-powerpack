@@ -246,7 +246,7 @@ module Fetch_types =
         /// Uses a Request object as request info
         | Req of Request
 
-    type GlobalFetch =
+    type [<Erase>] GlobalFetch =
         [<Global>]static member fetch (req: RequestInfo, ?init: RequestInit) = jsNative :Promise<Response>
 
         [<Global>]static member fetch (url:string, ?init: RequestInit) = jsNative :Promise<Response>

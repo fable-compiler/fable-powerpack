@@ -1,4 +1,4 @@
-[<Fable.Core.EntryModule("fable-powerpack")>]
+[<Fable.Core.EntryModule(".")>]
 module Fable.PowerPack.Main
 
 // This is just an empty module to indicate Fable
