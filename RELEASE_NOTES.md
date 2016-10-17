@@ -1,3 +1,7 @@
+### 0.0.6
+
+* Update fable-core version
+
 ### 0.0.5
 
 * Add sourcemaps

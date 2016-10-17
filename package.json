@@ -22,13 +22,13 @@
   },
   "homepage": "https://github.com/fable-compiler/fable-powerpack#readme",
   "dependencies": {
-    "fable-core": "^0.7.5-alpha"
+    "fable-core": "^0.7.5-alpha.2"
   },
   "peerDependencies": {
-    "fable-core": "^0.7.5-alpha"
+    "fable-core": "^0.7.5-alpha.2"
   },
   "devDependencies": {
-    "fable-compiler": "^0.7.5-alpha",
+    "fable-compiler": "^0.7.5-alpha.3",
     "mocha": "^3.1.2"
   }
 }
