@@ -4,8 +4,9 @@
   "description": "Utilities for Fable apps",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "fable"
+    "test": "fable tests",
+    "build": "fable",
+    "build-next": "fable -t next"    
   },
   "repository": {
     "type": "git",
@@ -22,13 +23,13 @@
   },
   "homepage": "https://github.com/fable-compiler/fable-powerpack#readme",
   "dependencies": {
-    "fable-core": "^0.7.5-alpha.2"
+    "fable-core": "^0.7.5-alpha.3"
   },
   "peerDependencies": {
     "fable-core": "^0.7.5-alpha.2"
   },
   "devDependencies": {
-    "fable-compiler": "^0.7.5-alpha.3",
+    "fable-compiler": "^0.7.5-alpha.6",
     "mocha": "^3.1.2"
   }
 }

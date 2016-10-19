@@ -1,5 +1,9 @@
 namespace Fable.PowerPack
 
+#r "../node_modules/fable-core/Fable.Core.dll"
+#load "Promise.fsx"
+#nowarn "1182" // Unused values
+
 open System
 open Fable.Core
 open Fable.Import
@@ -8,12 +12,12 @@ module Fetch_types =
 
     type [<AbstractClass; Import("*","Body")>] Body() =
         abstract bodyUsed: bool with get, set
-        abstract arrayBuffer: unit -> Promise<JS.ArrayBuffer>
-        abstract blob: unit -> Promise<Browser.Blob>;
-        abstract formData: unit -> Promise<Browser.FormData>
-        abstract json : unit -> Promise<obj>;
-        abstract json<'T> : unit -> Promise<'T>
-        abstract text : unit -> Promise<string>
+        abstract arrayBuffer: unit -> JS.Promise<JS.ArrayBuffer>
+        abstract blob: unit -> JS.Promise<Browser.Blob>;
+        abstract formData: unit -> JS.Promise<Browser.FormData>
+        abstract json : unit -> JS.Promise<obj>;
+        abstract json<'T> : unit -> JS.Promise<'T>
+        abstract text : unit -> JS.Promise<string>
         
     and [<AbstractClass; Import("*","Request")>] Request(input: U2<string, Request>, ?init: RequestInit) =
         inherit Body()
@@ -239,7 +243,7 @@ module Fetch_types =
     and BodyInit =
         U3<Browser.Blob, Browser.FormData, string>
 
-    [<Erase; RequireQualifiedAccess>]
+    [<Erase; RequireQualifiedAccess; NoComparison>]
     type RequestInfo =
         /// Uses a simple Url as string to create the request info
         | Url of string
@@ -247,11 +251,11 @@ module Fetch_types =
         | Req of Request
 
     type [<Erase>] GlobalFetch =
-        [<Global>]static member fetch (req: RequestInfo, ?init: RequestInit) = jsNative :Promise<Response>
+        [<Global>]static member fetch (req: RequestInfo, ?init: RequestInit) = jsNative :JS.Promise<Response>
 
-        [<Global>]static member fetch (url:string, ?init: RequestInit) = jsNative :Promise<Response>
+        [<Global>]static member fetch (url:string, ?init: RequestInit) = jsNative :JS.Promise<Response>
 
-        [<Global>]static member fetch (url:Request, ?init: RequestInit) = jsNative :Promise<Response>
+        [<Global>]static member fetch (url:Request, ?init: RequestInit) = jsNative :JS.Promise<Response>
 
     [<StringEnum; RequireQualifiedAccess>]
     type HttpMethod =
@@ -319,7 +323,7 @@ module Fetch_types =
     type IRequestProperties =
         interface end
 
-    [<KeyValueList>]
+    [<KeyValueList; NoComparison>]
     type RequestProperties =
         | Method of HttpMethod
         | Headers of HttpRequestHeaders list
@@ -336,18 +340,18 @@ open Fetch_types
 type Fetch =
 
     /// Retrieves data from the specified resource.
-    static member fetch (url:string, init: RequestProperties list) : Promise<Response> = 
+    static member fetch (url:string, init: RequestProperties list) : JS.Promise<Response> = 
         GlobalFetch.fetch(url, unbox init)
 
     /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T. 
-    static member fetchAs<'T>(url:string, init: RequestProperties list, [<GenericParam("T")>]?t: Type) : Promise<'T> =
+    static member fetchAs<'T>(url:string, init: RequestProperties list, [<GenericParam("T")>]?t: Type) : JS.Promise<'T> =
         GlobalFetch.fetch(url, unbox init)
         |> Promise.bind (fun fetched -> fetched.text())
         |> Promise.map (fun json -> Serialize.ofJson<'T>(json, t.Value))    
 
     /// Sends a HTTP post with the record serialized as JSON.
     /// This function already sets the HTTP Method to POST sets the json into the body.
-    static member postRecord<'T> (url,record:'T, properties: RequestProperties list) : Promise<Response> =
+    static member postRecord<'T> (url,record:'T, properties: RequestProperties list) : JS.Promise<Response> =
         let props =
             JS.Object.assign(
                 [ RequestProperties.Method HttpMethod.POST

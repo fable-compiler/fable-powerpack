@@ -1,13 +1,19 @@
 {
-    "projFile": "src/Fable.PowerPack.fsproj",
+    "projFile": "src/Fable.PowerPack.fsx",
     "outDir": "npm",
+    "dll": true,
     "module": "commonjs",
     "sourceMaps": true,
+    "scripts": {
+        "postbuild": "npm test"
+    },
     "targets": {
         "next": {
             "coreLib": "fable-core/es2015",
             "outDir": "npm/es2015",
-            "module": "es2015"
+            "module": "es2015",
+            "dll": false,
+            "scripts": { "postbuild": "" }
         }
     }
 }

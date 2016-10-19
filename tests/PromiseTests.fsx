@@ -5,6 +5,7 @@ open System
 open Fable.PowerPack
 open Fable.Core
 open Fable.Core.JsInterop
+open Fable.Import
 
 let assert' = importAll<obj> "assert"
 
@@ -12,7 +13,7 @@ let inline equal (expected: 'T) (actual: 'T): unit =
     assert'?equal(actual, expected) |> ignore
 
 [<Global>]
-let it (msg: string) (f: unit->Promise<'T>): unit = jsNative
+let it (msg: string) (f: unit->JS.Promise<'T>): unit = jsNative
 
 it "Simple promise translates without exception" <| fun () ->
     promise { return () }
@@ -143,14 +144,14 @@ it "Nested failure propagates in promise expressions" <| fun () ->
                     failwith "1"
                     return x
                 with
-                | e -> return! failwith ("2 " + e.Message) 
+                | e -> return! failwith ("2 " + e.Message.Trim('"')) 
             }
         let f2 x = 
             promise {
                 try
                     return! f1 x
                 with
-                | e -> return! failwith ("3 " + e.Message) 
+                | e -> return! failwith ("3 " + e.Message.Trim('"')) 
             }
         let f() =
             promise { 
@@ -158,7 +159,7 @@ it "Nested failure propagates in promise expressions" <| fun () ->
                     let! y = f2 4
                     return ()
                 with
-                | e -> data := e.Message
+                | e -> data := e.Message.Trim('"')
             }
         do! f()
         do! Promise.sleep 100
@@ -194,7 +195,7 @@ it "Final statement inside promise expressions can throw" <| fun () ->
                 do! f()
                 return ()
             with
-            | e -> data := !data + e.Message
+            | e -> data := !data + e.Message.Trim('"')
         }
         do! Promise.sleep 100
         equal "1 boom!" !data
