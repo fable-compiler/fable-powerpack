@@ -3,17 +3,18 @@ var fs = require("fs-extra");
 var fable = require("fable-compiler");
 
 function promise(f) {
-    args = Array.from(arguments).slice(1);
+    var args = Array.from(arguments).slice(1);
     return new Promise(function (resolve, reject) {
-        f.apply(this, args.concat(function (err, data) {
+        args.push(function (err, data) {
             if (err) { reject(err); } else { resolve(data); }
-        }))
+        });
+        f.apply(this, args);
     });
 }
 
 var targets = {
-    All() {
-        promise(fs.remove, "npm")
+    all() {
+        return promise(fs.remove, "npm")
             .then(_ => promise(fs.remove, "build"))
             .then(_ => fable.compile())
             .then(_ => fable.compile({ target: "next" }))
@@ -23,12 +24,11 @@ var targets = {
             .then(line => {
                 var version = /\d[^\s]*/.exec(line)[0];
                 return fable.runCommand("npm", "npm version " + version);
-            })
-            .catch(err => {
-                console.log("[ERROR] " + err);
-                proccess.exit(-1);
-            })
+            });
     }
 }
 
-targets[process.argv[2] || "All"]();
+targets[process.argv[2] || "all"]().catch(err => {
+    console.log("[ERROR] " + err);
+    proccess.exit(-1);
+});
