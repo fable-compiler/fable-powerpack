@@ -1,7 +1,5 @@
 namespace Fable.PowerPack
 
-#r "../node_modules/fable-core/Fable.Core.dll"
-#load "Promise.fsx"
 #nowarn "1182" // Unused values
 
 open System
@@ -18,12 +16,12 @@ module Fetch_types =
         abstract json : unit -> JS.Promise<obj>;
         abstract json<'T> : unit -> JS.Promise<'T>
         abstract text : unit -> JS.Promise<string>
-        
+
     and [<AbstractClass; Import("*","Request")>] Request(input: U2<string, Request>, ?init: RequestInit) =
         inherit Body()
         abstract ``method`` : string with get
         abstract url: string with get
-        abstract headers: Headers with get 
+        abstract headers: Headers with get
         abstract referrer: string with get
         abstract mode: U2<string,RequestMode> with get
         abstract credentials: U2<string,RequestCredentials> with get
@@ -39,9 +37,9 @@ module Fetch_types =
         abstract cache: RequestCache option with get, set
 
     and [<StringEnum; RequireQualifiedAccess>] RequestContext =
-        | Audio | Beacon | Cspreport | Download | Embed | Eventsource | Favicon | Fetch | Font 
-        | Form | Frame | Hyperlink | Iframe | Image | Imageset | Import | Internal | Location 
-        | Manifest | Object | Ping | Plugin | Prefetch | Script | Serviceworker | Sharedworker 
+        | Audio | Beacon | Cspreport | Download | Embed | Eventsource | Favicon | Fetch | Font
+        | Form | Frame | Hyperlink | Iframe | Image | Imageset | Import | Internal | Location
+        | Manifest | Object | Ping | Plugin | Prefetch | Script | Serviceworker | Sharedworker
         | Subresource | Style | Track | Video | Worker | Xmlhttprequest | Xslt
 
     and [<StringEnum; RequireQualifiedAccess>] RequestMode =
@@ -52,7 +50,7 @@ module Fetch_types =
 
     and [<StringEnum; RequireQualifiedAccess>] RequestCache =
         | Default
-        | [<CompiledName("no-store")>]Nostore 
+        | [<CompiledName("no-store")>]Nostore
         | Reload
         | [<CompiledName("no-cache")>]Nocache
         | [<CompiledName("force-cache")>]Forcecache
@@ -66,7 +64,7 @@ module Fetch_types =
         abstract has : string -> bool
         abstract set : string * string -> unit
 
-        /// Specifying which web sites can participate in cross-origin resource sharing        
+        /// Specifying which web sites can participate in cross-origin resource sharing
         [<Emit("$0.get('Access-Control-Allow-Origin')")>] abstract AccessControlAllowOrigin: string option
 
         /// Specifies which patch document formats this server supports
@@ -107,7 +105,7 @@ module Fetch_types =
 
         ///	A Base64-encoded binary MD5 sum of the content of the response
         [<Emit("$0.get('Content-MD5')")>] abstract ContentMD5: string option
-        
+
         /// Where in a full body message this partial message belongs
         [<Emit("$0.get('Content-Range'')")>] abstract ContentRange: string option
 
@@ -132,7 +130,7 @@ module Fetch_types =
         /// Used in redirection, or when a new resource has been created.
         [<Emit("$0.get('Location')")>] abstract Location: string option
 
-        /// This field is supposed to set P3P policy, in the form of P3P:CP="your_compact_policy". 
+        /// This field is supposed to set P3P policy, in the form of P3P:CP="your_compact_policy".
         [<Emit("$0.get('P3P')")>] abstract P3P: string option
 
         /// Implementation-specific fields that may have various effects anywhere along the request-response chain.
@@ -222,7 +220,7 @@ module Fetch_types =
 
         /// Verifies that the fetch was successful
         [<Emit("$0.ok")>] abstract Ok: bool
-        
+
         /// Returns the HTTP status code
         [<Emit("$0.status")>] abstract Status: int
 
@@ -259,11 +257,11 @@ module Fetch_types =
 
     [<StringEnum; RequireQualifiedAccess>]
     type HttpMethod =
-        | [<CompiledName("GET")>] GET 
-        | [<CompiledName("HEAD")>] HEAD 
-        | [<CompiledName("POST")>] POST 
-        | [<CompiledName("PUT")>] PUT 
-        | [<CompiledName("DELETE")>] DELETE 
+        | [<CompiledName("GET")>] GET
+        | [<CompiledName("HEAD")>] HEAD
+        | [<CompiledName("POST")>] POST
+        | [<CompiledName("PUT")>] PUT
+        | [<CompiledName("DELETE")>] DELETE
         | [<CompiledName("TRACE")>] TRACE
         | [<CompiledName("CONNECT")>] CONNECT
 
@@ -335,19 +333,21 @@ module Fetch_types =
 
 open Fetch_types
 
-/// The Fetch API provides a JavaScript interface for accessing and manipulating parts of the HTTP pipeline, such as requests and responses. 
+/// The Fetch API provides a JavaScript interface for accessing and manipulating parts of the HTTP pipeline, such as requests and responses.
 /// It also provides a global fetch() method that provides an easy, logical way to fetch resources asynchronously across the network.
 type Fetch =
 
+    static member Foo = Promise.foo
+
     /// Retrieves data from the specified resource.
-    static member fetch (url:string, init: RequestProperties list) : JS.Promise<Response> = 
+    static member fetch (url:string, init: RequestProperties list) : JS.Promise<Response> =
         GlobalFetch.fetch(url, unbox init)
 
-    /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T. 
+    /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
     static member fetchAs<'T>(url:string, init: RequestProperties list, [<GenericParam("T")>]?t: Type) : JS.Promise<'T> =
         GlobalFetch.fetch(url, unbox init)
         |> Promise.bind (fun fetched -> fetched.text())
-        |> Promise.map (fun json -> Serialize.ofJson<'T>(json, t.Value))    
+        |> Promise.map (fun json -> Serialize.ofJson<'T>(json, t.Value))
 
     /// Sends a HTTP post with the record serialized as JSON.
     /// This function already sets the HTTP Method to POST sets the json into the body.

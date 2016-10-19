@@ -1,3 +1,7 @@
+### 0.0.8
+
+* Use only scripts for fable-powerpack
+
 ### 0.0.7
 
 * Use relative path with `EntryModuleAttribute`

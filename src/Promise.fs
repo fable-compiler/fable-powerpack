@@ -1,6 +1,5 @@
 namespace Fable.PowerPack
 
-#r "../node_modules/fable-core/Fable.Core.dll"
 #nowarn "1182" // Unused values
 
 [<RequireQualifiedAccess>]
@@ -9,6 +8,8 @@ module Promise =
     open Fable.Core
     open Fable.Import
     open Fable.Core.JsInterop
+
+    let foo = "foo"
 
     let inline private (!) (x:obj): 'T = unbox x
 
@@ -33,7 +34,7 @@ module Promise =
 
     [<Emit("$1.catch($0)")>]
     let catch (a: obj->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
-        
+
     [<Emit("$2.then($0,$1)")>]
     let either (success: 'T->'R) (fail: obj->'R) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 

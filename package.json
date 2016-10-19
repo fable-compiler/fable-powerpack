@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "fable tests",
-    "build": "fable",
-    "build-next": "fable -t next"    
+    "build": "node build"
   },
   "repository": {
     "type": "git",
@@ -23,13 +22,14 @@
   },
   "homepage": "https://github.com/fable-compiler/fable-powerpack#readme",
   "dependencies": {
-    "fable-core": "^0.7.5-alpha.3"
+    "fable-core": "next"
   },
   "peerDependencies": {
-    "fable-core": "^0.7.5-alpha.2"
+    "fable-core": "next"
   },
   "devDependencies": {
-    "fable-compiler": "^0.7.5-alpha.6",
+    "fable-compiler": "next",
+    "fs-extra": "^0.30.0",
     "mocha": "^3.1.2"
   }
 }

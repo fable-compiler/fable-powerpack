@@ -1,5 +1,5 @@
 {
-    "projFile": "src/Fable.PowerPack.fsx",
+    "projFile": "src/Fable.PowerPack.fsproj",
     "outDir": "npm",
     "dll": true,
     "module": "commonjs",
