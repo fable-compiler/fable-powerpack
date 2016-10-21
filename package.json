@@ -2,7 +2,6 @@
   "name": "fable-powerpack",
   "version": "0.0.0",
   "description": "Utilities for Fable apps",
-  "main": "index.js",
   "scripts": {
     "test": "fable tests",
     "build": "node build"
