@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- PROJECT NAME AND OUTPUT PATH -->
-  <PropertyGroup>
-    <Name>Fable.PowerPack</Name>
-    <OutputPath>../npm</OutputPath>
-    <DocumentationFile>../npm/Fable.PowerPack.xml</DocumentationFile>
-  </PropertyGroup>
   <!-- DLL REFERENCES -->
   <!-- Start them always with a period so Fable knows they're relative paths. -->
   <ItemGroup>
