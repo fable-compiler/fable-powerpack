@@ -1,9 +1,12 @@
-namespace Fable.PowerPack
+/// The Fetch API provides a JavaScript interface for accessing and manipulating parts of the HTTP pipeline, such as requests and responses.
+/// It also provides a global fetch() method that provides an easy, logical way to fetch resources asynchronously across the network.
+module Fable.PowerPack.Fetch
 
 #nowarn "1182" // Unused values
 
 open System
 open Fable.Core
+open Fable.Core.JsInterop
 open Fable.Import
 
 module Fetch_types =
@@ -333,28 +336,21 @@ module Fetch_types =
 
 open Fetch_types
 
-/// The Fetch API provides a JavaScript interface for accessing and manipulating parts of the HTTP pipeline, such as requests and responses.
-/// It also provides a global fetch() method that provides an easy, logical way to fetch resources asynchronously across the network.
-type Fetch =
+/// Retrieves data from the specified resource.
+let fetch (url:string, init: RequestProperties list) : JS.Promise<Response> =
+    GlobalFetch.fetch(url, unbox init)
 
-    static member Foo = Promise.foo
+/// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
+let [<PassGenerics>] fetchAs<'T>(url:string, init: RequestProperties list) : JS.Promise<'T> =
+    GlobalFetch.fetch(url, unbox init)
+    |> Promise.bind (fun fetched -> fetched.text())
+    |> Promise.map (fun json -> ofJson<'T> json)
 
-    /// Retrieves data from the specified resource.
-    static member fetch (url:string, init: RequestProperties list) : JS.Promise<Response> =
-        GlobalFetch.fetch(url, unbox init)
-
-    /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
-    static member fetchAs<'T>(url:string, init: RequestProperties list, [<GenericParam("T")>]?t: Type) : JS.Promise<'T> =
-        GlobalFetch.fetch(url, unbox init)
-        |> Promise.bind (fun fetched -> fetched.text())
-        |> Promise.map (fun json -> Serialize.ofJson<'T>(json, t.Value))
-
-    /// Sends a HTTP post with the record serialized as JSON.
-    /// This function already sets the HTTP Method to POST sets the json into the body.
-    static member postRecord<'T> (url,record:'T, properties: RequestProperties list) : JS.Promise<Response> =
-        let props =
-            JS.Object.assign(
-                [ RequestProperties.Method HttpMethod.POST
-                  RequestProperties.Body (unbox (Serialize.toJson record))],
-               properties)
-        Fetch.fetch(url, unbox props)
+/// Sends a HTTP post with the record serialized as JSON.
+/// This function already sets the HTTP Method to POST sets the json into the body.
+let postRecord<'T> (url: string,record:'T, properties: RequestProperties list) : JS.Promise<Response> =
+    let props =
+        JS.Object.assign(
+            [RequestProperties.Method HttpMethod.POST
+             RequestProperties.Body (unbox (toJson record))], properties)
+    GlobalFetch.fetch(url, unbox props)

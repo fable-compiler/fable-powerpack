@@ -17,7 +17,6 @@ var targets = {
         return promise(fs.remove, "npm")
             .then(_ => promise(fs.remove, "build"))
             .then(_ => fable.compile())
-            .then(_ => fable.compile({ target: "next" }))
             .then(_ => promise(fs.copy, "package.json", "npm/package.json"))
             .then(_ => promise(fs.copy, "README.md", "npm/README.md"))
             .then(_ => promise(fs.readFile, "RELEASE_NOTES.md"))

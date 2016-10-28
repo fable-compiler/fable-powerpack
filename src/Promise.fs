@@ -9,8 +9,6 @@ module Promise =
     open Fable.Import
     open Fable.Core.JsInterop
 
-    let foo = "foo"
-
     let inline private (!) (x:obj): 'T = unbox x
 
     [<Emit("new Promise($0)")>]

@@ -1,8 +1,13 @@
 {
-    "projFile": "files.fsx",
-    "outDir": "../build/tests",
-    "module": "commonjs",
+    "projFile": [
+        "PromiseTests.fsx"
+    ],
+    "rollup": {
+        "dest": "../build/tests/bundle.js",
+        "format": "cjs",
+        "external": ["assert"]
+    },
     "scripts": {
-        "postbuild": "node ../node_modules/mocha/bin/mocha ../build/tests"
+        "postbuild": "node ../node_modules/mocha/bin/mocha ../build/tests/bundle.js"
     }
 }
