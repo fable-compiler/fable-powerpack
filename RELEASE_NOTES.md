@@ -1,3 +1,7 @@
+### 0.0.10
+
+* Remove peer dependencies
+
 ### 0.0.9
 
 * Build with fable 0.7 alpha round 2

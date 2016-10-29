@@ -20,13 +20,8 @@
     "url": "https://github.com/fable-compiler/fable-powerpack/issues"
   },
   "homepage": "https://github.com/fable-compiler/fable-powerpack#readme",
-  "dependencies": {
-    "fable-core": "next"
-  },
-  "peerDependencies": {
-    "fable-core": "next"
-  },
   "devDependencies": {
+    "fable-core": "next",
     "fable-compiler": "next",
     "fs-extra": "^0.30.0",
     "mocha": "^3.1.2"
