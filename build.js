@@ -19,5 +19,5 @@ var targets = {
 
 targets[process.argv[2] || "all"]().catch(err => {
     console.log("[ERROR] " + err);
-    proccess.exit(-1);
+    process.exit(-1);
 });
