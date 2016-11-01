@@ -1,3 +1,7 @@
+### 0.0.11
+
+* Fix fetch error
+
 ### 0.0.10
 
 * Remove peer dependencies
