@@ -3,16 +3,13 @@
     "outDir": "npm",
     "dll": true,
     "sourceMaps": true,
-    "scripts": {
-        "postbuild": "npm test"
-    },
     "targets": {
         "umd": {
             "outDir": "npm/umd",
             "module": "umd",
             "coreLib": "fable-core/umd",
             "scripts": {
-                "postbuild": ""
+                "postbuild": "npm test"
             }
         }
     }

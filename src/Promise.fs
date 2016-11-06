@@ -36,6 +36,9 @@ module Promise =
     [<Emit("$2.then($0,$1)")>]
     let either (success: 'T->'R) (fail: obj->'R) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 
+    [<Emit("Promise.all($0)")>]
+    let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
+
     type PromiseBuilder() =
         [<Emit("$1.then($2)")>]
         member x.Bind(p: JS.Promise<'T>, f: 'T->JS.Promise<'R>): JS.Promise<'R> = jsNative

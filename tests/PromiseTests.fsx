@@ -1,5 +1,5 @@
 #r "../node_modules/fable-core/Fable.Core.dll"
-#r "../npm/Fable.PowerPack.dll"
+#r "../npm/umd/Fable.PowerPack.dll"
 
 open System
 open Fable.PowerPack
@@ -33,7 +33,7 @@ it "PromiseBuilder.Combine works" <| fun () ->
 it "Promise for binding works correctly" <| fun () ->
     let inputs = [|1; 2; 3|]
     let result = ref 0
-    promise { 
+    promise {
         for inp in inputs do
             result := !result + inp
     }
@@ -41,7 +41,7 @@ it "Promise for binding works correctly" <| fun () ->
 
 it "Promise while binding works correctly" <| fun () ->
     let mutable result = 0
-    promise { 
+    promise {
         while result < 10 do
             result <- result + 1
     }
@@ -50,7 +50,7 @@ it "Promise while binding works correctly" <| fun () ->
 it "Promise exceptions are handled correctly" <| fun () ->
     let result = ref 0
     let f shouldThrow =
-        promise { 
+        promise {
             try
                 if shouldThrow then failwith "boom!"
                 else result := 12
@@ -60,12 +60,12 @@ it "Promise exceptions are handled correctly" <| fun () ->
         let! x = f true
         let! y = f false
         return x + y
-    } |> Promise.map (equal 22)  
+    } |> Promise.map (equal 22)
 
 it "Simple promise is executed correctly" <| fun () ->
     let result = ref false
     let x = promise { return 99 }
-    promise { 
+    promise {
         let! x = x
         let y = 99
         result := x = y
@@ -83,7 +83,7 @@ it "promise use statements should dispose of resources when they go out of scope
     let resource = promise {
         return new DisposableAction(fun () -> isDisposed := true)
     }
-    promise { 
+    promise {
         use! r = resource
         step1ok := not !isDisposed
     }
@@ -95,7 +95,7 @@ it "Try ... with ... expressions inside promise expressions work the same" <| fu
     let result = ref ""
     let throw() : unit =
         raise(exn "Boo!")
-    let append(x) = 
+    let append(x) =
         result := !result + x
     let innerPromise() =
         promise {
@@ -106,7 +106,7 @@ it "Try ... with ... expressions inside promise expressions work the same" <| fu
             with _ -> append "d"
             append "e"
         }
-    promise { 
+    promise {
         append "a"
         try do! innerPromise()
         with _ -> append "2"
@@ -115,8 +115,8 @@ it "Try ... with ... expressions inside promise expressions work the same" <| fu
         equal !result "abcdef")
 
 it "Promise try .. with returns correctly from 'with' branch" <| fun () ->
-    let work = promise { 
-        try 
+    let work = promise {
+        try
           failwith "testing"
           return -1
         with e ->
@@ -138,23 +138,23 @@ it "Promise try .. with returns correctly from 'with' branch" <| fun () ->
 it "Nested failure propagates in promise expressions" <| fun () ->
     promise {
         let data = ref ""
-        let f1 x = 
+        let f1 x =
             promise {
                 try
                     failwith "1"
                     return x
                 with
-                | e -> return! failwith ("2 " + e.Message.Trim('"')) 
+                | e -> return! failwith ("2 " + e.Message.Trim('"'))
             }
-        let f2 x = 
+        let f2 x =
             promise {
                 try
                     return! f1 x
                 with
-                | e -> return! failwith ("3 " + e.Message.Trim('"')) 
+                | e -> return! failwith ("3 " + e.Message.Trim('"'))
             }
         let f() =
-            promise { 
+            promise {
                 try
                     let! y = f2 4
                     return ()
@@ -190,7 +190,7 @@ it "Final statement inside promise expressions can throw" <| fun () ->
             try data := !data + "1 "
             finally failwith "boom!"
         }
-        do! promise { 
+        do! promise {
             try
                 do! f()
                 return ()

@@ -1,13 +1,12 @@
 {
     "projFile": [
+        "FetchTests.fsx",
         "PromiseTests.fsx"
     ],
-    "rollup": {
-        "dest": "../build/tests/bundle.js",
-        "format": "cjs",
-        "external": ["assert"]
-    },
+    "coreLib": "fable-core/umd",
+    "module": "commonjs",
+    "outDir": "../build/tests",
     "scripts": {
-        "postbuild": "node ../node_modules/mocha/bin/mocha ../build/tests/bundle.js"
+        "postbuild": "node ../node_modules/mocha/bin/mocha ../build/tests"
     }
 }

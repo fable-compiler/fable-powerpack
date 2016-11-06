@@ -1,3 +1,9 @@
+### 0.0.12
+
+* Add `Promise.Parallel`
+* Add `umd` distribution
+* Add `fetch` test
+
 ### 0.0.11
 
 * Fix fetch error
