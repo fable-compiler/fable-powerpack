@@ -11,7 +11,7 @@ open Fable.Import
 
 module Fetch_types =
 
-    type [<AbstractClass; Import("*","Body")>] Body() =
+    type Body =
         abstract bodyUsed: bool with get, set
         abstract arrayBuffer: unit -> JS.Promise<JS.ArrayBuffer>
         abstract blob: unit -> JS.Promise<Browser.Blob>;
@@ -20,8 +20,8 @@ module Fetch_types =
         abstract json<'T> : unit -> JS.Promise<'T>
         abstract text : unit -> JS.Promise<string>
 
-    and [<AbstractClass; Import("*","Request")>] Request(input: U2<string, Request>, ?init: RequestInit) =
-        inherit Body()
+    and Request = //(input: U2<string, Request>, ?init: RequestInit) =
+        inherit Body
         abstract ``method`` : string with get
         abstract url: string with get
         abstract headers: Headers with get
@@ -59,7 +59,7 @@ module Fetch_types =
         | [<CompiledName("force-cache")>]Forcecache
         | [<CompiledName("only-if-cached")>]Onlyifcached
 
-    and [<AbstractClass; Import("*","Headers")>] Headers() =
+    and Headers =
         abstract append : string * string -> unit
         abstract delete : string -> unit
         abstract get : string -> string
@@ -103,10 +103,10 @@ module Fetch_types =
         /// The length of the response body in octets (8-bit bytes)
         [<Emit("$0.get('Content-Length')")>] abstract ContentLength: string option
 
-        ///	An alternate location for the returned data
+        /// An alternate location for the returned data
         [<Emit("$0.get('Content-Location')")>] abstract ContentLocation: string option
 
-        ///	A Base64-encoded binary MD5 sum of the content of the response
+        /// A Base64-encoded binary MD5 sum of the content of the response
         [<Emit("$0.get('Content-MD5')")>] abstract ContentMD5: string option
 
         /// Where in a full body message this partial message belongs
@@ -142,58 +142,58 @@ module Fetch_types =
         /// Request authentication to access the proxy.
         [<Emit("$0.get('Proxy-Authenticate')")>] abstract ProxyAuthenticate: string option
 
-        ///	HTTP Public Key Pinning, announces hash of website's authentic TLS certificate
+        /// HTTP Public Key Pinning, announces hash of website's authentic TLS certificate
         [<Emit("$0.get('Public-Key-Pins')")>] abstract PublicKeyPins: string option
 
-        ///	Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds.
+        /// Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds.
         [<Emit("$0.get('Refresh')")>] abstract Refresh: string option
 
-        ///	If an entity is temporarily unavailable, this instructs the client to try again later. Value could be a specified period of time (in seconds) or a HTTP-date.
+        /// If an entity is temporarily unavailable, this instructs the client to try again later. Value could be a specified period of time (in seconds) or a HTTP-date.
         [<Emit("$0.get('Retry-After')")>] abstract RetryAfter: string option
 
-        ///	A name for the server
+        /// A name for the server
         [<Emit("$0.get('Server')")>] abstract Server: string option
 
-        ///	An HTTP cookie
+        /// An HTTP cookie
         [<Emit("$0.get('Set-Cookie')")>] abstract SetCookie: string option
 
-        ///	CGI header field specifying the status of the HTTP response. Normal HTTP responses use a separate "Status-Line" instead, defined by RFC 7230
+        /// CGI header field specifying the status of the HTTP response. Normal HTTP responses use a separate "Status-Line" instead, defined by RFC 7230
         [<Emit("$0.get('Status')")>] abstract Status: string option
 
-        ///	A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.
+        /// A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.
         [<Emit("$0.get('Strict-Transport-Security')")>] abstract StrictTransportSecurity: string option
 
-        ///	The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer coding.
+        /// The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer coding.
         [<Emit("$0.get('Trailer')")>] abstract Trailer: string option
 
-        ///	The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.
+        /// The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.
         [<Emit("$0.get('Transfer-Encoding')")>] abstract TransferEncoding: string option
 
-        ///	Tracking Status Value, value suggested to be sent in response to a DNT(do-not-track)
+        /// Tracking Status Value, value suggested to be sent in response to a DNT(do-not-track)
         [<Emit("$0.get('TSV')")>] abstract TSV: string option
 
-        ///	Ask the client to upgrade to another protocol.
+        /// Ask the client to upgrade to another protocol.
         [<Emit("$0.get('Upgrade')")>] abstract Upgrade: string option
 
-        ///	Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.
+        /// Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.
         [<Emit("$0.get('Vary')")>] abstract Vary: string option
 
-        ///	Informs the client of proxies through which the response was sent.
+        /// Informs the client of proxies through which the response was sent.
         [<Emit("$0.get('Via')")>] abstract Via: string option
 
-        ///	A general warning about possible problems with the entity body.
+        /// A general warning about possible problems with the entity body.
         [<Emit("$0.get('Warning')")>] abstract Warning: string option
 
-        ///	Indicates the authentication scheme that should be used to access the requested entity.
+        /// Indicates the authentication scheme that should be used to access the requested entity.
         [<Emit("$0.get('WWW-Authenticate')")>] abstract WWWAuthenticate: string option
 
-        ///	Clickjacking protection: deny - no rendering within a frame, sameorigin - no rendering if origin mismatch, allow-from - allow from specified location, allowall - non-standard, allow from any location
+        /// Clickjacking protection: deny - no rendering within a frame, sameorigin - no rendering if origin mismatch, allow-from - allow from specified location, allowall - non-standard, allow from any location
         [<Emit("$0.get('X-Frame-Options')")>] abstract XFrameOptions: string option
 
-        ///	Cross-site scripting (XSS) filter
+        /// Cross-site scripting (XSS) filter
         [<Emit("$0.get('X-XSS-Protection')")>] abstract XXSSProtection: string option
 
-        ///	Content Security Policy definition.
+        /// Content Security Policy definition.
         [<Emit("$0.get('Content-Security-Policy')")>] abstract ContentSecurityPolicy: string option
 
         /// The only defined value, "nosniff", prevents Internet Explorer from MIME-sniffing a response away from the declared content-type. This also applies to Google Chrome, when downloading extensions
@@ -218,8 +218,8 @@ module Fetch_types =
         [<Emit("$0.get('X-Correlation-ID')")>] abstract XCorrelationID: string option
 
 
-    and [<AbstractClass; Import("*","Response")>] Response(?body: BodyInit, ?init: ResponseInit) =
-        inherit Body()
+    and Response = //(?body: BodyInit, ?init: ResponseInit) =
+        inherit Body
 
         /// Verifies that the fetch was successful
         [<Emit("$0.ok")>] abstract Ok: bool
@@ -253,10 +253,6 @@ module Fetch_types =
 
     type [<Erase>] GlobalFetch =
         [<Global>]static member fetch (req: RequestInfo, ?init: RequestInit) = jsNative :JS.Promise<Response>
-
-        [<Global>]static member fetch (url:string, ?init: RequestInit) = jsNative :JS.Promise<Response>
-
-        [<Global>]static member fetch (url:Request, ?init: RequestInit) = jsNative :JS.Promise<Response>
 
     [<StringEnum; RequireQualifiedAccess>]
     type HttpMethod =
@@ -338,19 +334,19 @@ open Fetch_types
 
 /// Retrieves data from the specified resource.
 let fetch (url:string, init: RequestProperties list) : JS.Promise<Response> =
-    GlobalFetch.fetch(url, unbox init)
+    GlobalFetch.fetch(RequestInfo.Url url, unbox init)
 
 /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
 let [<PassGenerics>] fetchAs<'T>(url:string, init: RequestProperties list) : JS.Promise<'T> =
-    GlobalFetch.fetch(url, unbox init)
+    GlobalFetch.fetch(RequestInfo.Url url, unbox init)
     |> Promise.bind (fun fetched -> fetched.text())
     |> Promise.map (fun json -> ofJson<'T> json)
 
 /// Sends a HTTP post with the record serialized as JSON.
 /// This function already sets the HTTP Method to POST sets the json into the body.
-let postRecord<'T> (url: string,record:'T, properties: RequestProperties list) : JS.Promise<Response> =
+let postRecord<'T> (url: string, record:'T, properties: RequestProperties list) : JS.Promise<Response> =
     let props =
         JS.Object.assign(
             [RequestProperties.Method HttpMethod.POST
              RequestProperties.Body (unbox (toJson record))], properties)
-    GlobalFetch.fetch(url, unbox props)
+    GlobalFetch.fetch(RequestInfo.Url url, unbox props)

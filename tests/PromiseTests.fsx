@@ -7,9 +7,8 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
 
-let assert' = importAll<obj> "assert"
-
 let inline equal (expected: 'T) (actual: 'T): unit =
+    let assert' = importAll<obj> "assert"
     assert'?equal(actual, expected) |> ignore
 
 [<Global>]

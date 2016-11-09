@@ -8,9 +8,8 @@ open Fable.Import
 open Fable.PowerPack
 open Fable.PowerPack.Fetch
 
-let assert' = importAll<obj> "assert"
-
 let inline equal (expected: 'T) (actual: 'T): unit =
+    let assert' = importAll<obj> "assert"
     assert'?equal(actual, expected) |> ignore
 
 [<Global>]
