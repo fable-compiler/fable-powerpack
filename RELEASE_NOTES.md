@@ -1,3 +1,7 @@
+### 0.0.14
+
+* Compile using latest fable-compiler
+
 ### 0.0.12
 
 * Add `Promise.Parallel`

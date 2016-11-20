@@ -1,6 +1,7 @@
 var path = require("path");
 var fs = require("fs-extra");
 var fable = require("fable-compiler");
+// var fable = require("../Fable/build/fable");
 
 var targets = {
     all() {
@@ -8,6 +9,7 @@ var targets = {
             .then(_ => fable.promisify(fs.remove, "build"))
             .then(_ => fable.compile())
             .then(_ => fable.compile({target: "umd"}))
+            .then(_ => fable.compile("tests"))
             .then(_ => fable.promisify(fs.copy, "package.json", "npm/package.json"))
             .then(_ => fable.promisify(fs.copy, "README.md", "npm/README.md"))
             .then(_ => fable.promisify(fs.readFile, "RELEASE_NOTES.md"))

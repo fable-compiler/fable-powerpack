@@ -1,5 +1,5 @@
 #r "../node_modules/fable-core/Fable.Core.dll"
-#r "../npm/umd/Fable.PowerPack.dll"
+#r "../npm/Fable.PowerPack.dll"
 
 open System
 open Fable.Core
