@@ -1,3 +1,7 @@
+### 0.0.15
+
+* `Promise.catch` continuation passes an exception
+
 ### 0.0.14
 
 * Compile using latest fable-compiler

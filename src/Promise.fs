@@ -9,7 +9,7 @@ module Promise =
     open Fable.Import
     open Fable.Core.JsInterop
 
-    let inline private (!) (x:obj): 'T = unbox x
+    let inline private (!!) (x:obj): 'T = unbox x
 
     [<Emit("new Promise($0)")>]
     /// The promise function receives two other function parameters: success and fail
@@ -31,10 +31,10 @@ module Promise =
     let iter (a: 'T->unit) (pr: JS.Promise<'T>): unit = jsNative
 
     [<Emit("$1.catch($0)")>]
-    let catch (a: obj->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
+    let catch (a: Exception->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
 
     [<Emit("$2.then($0,$1)")>]
-    let either (success: 'T->'R) (fail: obj->'R) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
+    let either (success: 'T->'R) (fail: Exception->'R) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 
     [<Emit("Promise.all($0)")>]
     let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
@@ -52,7 +52,7 @@ module Promise =
             //     bind (fun () -> body a) p)
             let mutable p = lift ()
             for a in seq do
-                p <- !p?``then``(fun () -> body a)
+                p <- !!p?``then``(fun () -> body a)
             p
 
         member x.While(guard, p): JS.Promise<unit> =
@@ -70,26 +70,26 @@ module Promise =
         member x.Zero(): JS.Promise<unit> = jsNative
 
         member x.TryFinally(p: JS.Promise<'T>, compensation: unit->unit) =
-            either (fun x -> compensation(); x) (fun er -> compensation(); raise !er) p
+            either (fun x -> compensation(); x) (fun er -> compensation(); raise !!er) p
 
         [<Emit("$1.catch($2)")>]
         member x.TryWith(p: JS.Promise<'T>, catchHandler: Exception->JS.Promise<'T>): JS.Promise<'T> = jsNative
 
         member x.Delay(generator: unit->JS.Promise<'T>): JS.Promise<'T> =
-            !createObj[
+            !!createObj[
                 "then" ==> fun f1 f2 ->
                     try generator()?``then``(f1,f2)
                     with er ->
                         if box f2 = null
-                        then !JS.Promise.reject(er)
+                        then !!JS.Promise.reject(er)
                         else
-                            try !JS.Promise.resolve(f2(er))
-                            with er -> !JS.Promise.reject(er)
+                            try !!JS.Promise.resolve(f2(er))
+                            with er -> !!JS.Promise.reject(er)
                 "catch" ==> fun f ->
                     try generator()?catch(f)
                     with er ->
-                        try !JS.Promise.resolve(f(er))
-                        with er -> !JS.Promise.reject(er)
+                        try !!JS.Promise.resolve(f(er))
+                        with er -> !!JS.Promise.reject(er)
             ]
 
         member x.Using<'T, 'R when 'T :> IDisposable>(resource: 'T, binder: 'T->JS.Promise<'R>): JS.Promise<'R> =
