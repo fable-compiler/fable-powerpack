@@ -346,6 +346,7 @@ let fetch (url: string) (init: RequestProperties list) : JS.Promise<Response> =
             response
         else
             // TODO maybe this should use the input URL rather than the response URL ?
+            // TODO this should probably throw a custom error type
             failwith (string response.Status + " " + response.StatusText + " for URL " + response.Url))
 
 /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
