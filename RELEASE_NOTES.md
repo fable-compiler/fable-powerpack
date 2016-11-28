@@ -1,3 +1,9 @@
+### 0.0.16
+
+* `fetch`, `fetchAs`, and `postRecord` now throw an exception on non-2xx HTTP status codes
+
+* `fetch`, `fetchAs`, and `postRecord` now accept curried arguments rather than tupled arguments
+
 ### 0.0.15
 
 * `Promise.catch` continuation passes an exception

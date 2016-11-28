@@ -227,6 +227,12 @@ module Fetch_types =
         /// Returns the HTTP status code
         [<Emit("$0.status")>] abstract Status: int
 
+        /// Returns the HTTP status message
+        [<Emit("$0.statusText")>] abstract StatusText: string
+
+        /// Returns the response URL
+        [<Emit("$0.url")>] abstract Url: string
+
         /// Returns the headers objct
         [<Emit("$0.headers")>] abstract Headers : Headers
 
@@ -333,21 +339,28 @@ module Fetch_types =
 open Fetch_types
 
 /// Retrieves data from the specified resource.
-let fetch (url:string, init: RequestProperties list) : JS.Promise<Response> =
+let fetch (url: string) (init: RequestProperties list) : JS.Promise<Response> =
     GlobalFetch.fetch(RequestInfo.Url url, unbox init)
+    |> Promise.map (fun response ->
+        if response.Ok then
+            response
+        else
+            // TODO maybe this should use the input URL rather than the response URL ?
+            // TODO this should probably throw a custom error type
+            failwith (string response.Status + " " + response.StatusText + " for URL " + response.Url))
 
 /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
-let [<PassGenerics>] fetchAs<'T>(url:string, init: RequestProperties list) : JS.Promise<'T> =
-    GlobalFetch.fetch(RequestInfo.Url url, unbox init)
+let [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<'T> =
+    fetch url init
     |> Promise.bind (fun fetched -> fetched.text())
     |> Promise.map (fun json -> ofJson<'T> json)
 
 /// Sends a HTTP post with the record serialized as JSON.
 /// This function already sets the HTTP Method to POST sets the json into the body.
-let postRecord<'T> (url: string, record:'T, properties: RequestProperties list) : JS.Promise<Response> =
+let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Response> =
     let props =
         JS.Object.assign(
             [RequestProperties.Method HttpMethod.POST
              RequestProperties.Headers [ContentType "application/json"]
              RequestProperties.Body (unbox (toJson record))], properties)
-    GlobalFetch.fetch(RequestInfo.Url url, unbox props)
+    fetch url (unbox props)
