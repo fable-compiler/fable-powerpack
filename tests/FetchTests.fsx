@@ -20,7 +20,7 @@ JsInterop.importAll "isomorphic-fetch"
 
 it "Parallel fetch requests work" <| fun () ->
     let getWebPageLength url =
-        fetch(url, [])
+        fetch url []
         |> Promise.bind (fun res -> res.text())
         |> Promise.map (fun txt -> txt.Length)
     getWebPageLength "http://fable.io"
@@ -29,7 +29,7 @@ it "Parallel fetch requests work" <| fun () ->
 it "Parallel fetch requests work" <| fun () ->
     let getWebPageLength url =
         promise {
-            let! res = fetch(url, [])
+            let! res = fetch url []
             let! txt = res.text()
             return txt.Length
         }
@@ -44,7 +44,7 @@ it "Parallel fetch requests work" <| fun () ->
 
 it "Unsuccessful HTTP status codes throw an error" <| fun () ->
     promise {
-        let! res = fetch("http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it", [])
+        let! res = fetch "http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it" []
         let! txt = res.text()
         return txt
     }
