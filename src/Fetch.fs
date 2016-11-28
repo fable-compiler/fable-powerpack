@@ -348,5 +348,6 @@ let postRecord<'T> (url: string, record:'T, properties: RequestProperties list) 
     let props =
         JS.Object.assign(
             [RequestProperties.Method HttpMethod.POST
+             RequestProperties.Headers [ContentType "application/json"]
              RequestProperties.Body (unbox (toJson record))], properties)
     GlobalFetch.fetch(RequestInfo.Url url, unbox props)
