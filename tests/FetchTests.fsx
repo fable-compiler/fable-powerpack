@@ -41,3 +41,14 @@ it "Parallel fetch requests work" <| fun () ->
     // The sum of lenghts of all web pages is
     // expected to be bigger than 100 characters
     |> Promise.map (fun results -> (Array.sum results) > 100 |> equal true)
+
+it "Unsuccessful HTTP status codes throw an error" <| fun () ->
+    promise {
+        let! res = fetch("http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it", [])
+        let! txt = res.text()
+        return txt
+    }
+    |> Promise.map (fun txt -> txt)
+    |> Promise.catch (fun e -> e.Message)
+    |> Promise.map (fun results ->
+         results |> equal "404 Not Found for URL http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it")
