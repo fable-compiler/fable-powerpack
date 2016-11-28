@@ -3,10 +3,6 @@
         "FetchTests.fsx",
         "PromiseTests.fsx"
     ],
-    "refs": {
-        "Fable.Core": "fable-core/umd",
-        "Fable.PowerPack": "../npm/umd"
-    },
     "module": "commonjs",
     "outDir": "../build/tests",
     "scripts": {

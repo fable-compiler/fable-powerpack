@@ -18,7 +18,7 @@ let it (msg: string) (f: unit->JS.Promise<'T>): unit = jsNative
 // Fetch polyfill for node
 JsInterop.importAll "isomorphic-fetch"
 
-it "Parallel fetch requests work" <| fun () ->
+it "Fetch requests work" <| fun () ->
     let getWebPageLength url =
         fetch url []
         |> Promise.bind (fun res -> res.text())
@@ -48,7 +48,7 @@ it "Unsuccessful HTTP status codes throw an error" <| fun () ->
         let! txt = res.text()
         return txt
     }
-    |> Promise.map (fun txt -> txt)
+    |> Promise.map id
     |> Promise.catch (fun e -> e.Message)
     |> Promise.map (fun results ->
          results |> equal "404 Not Found for URL http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it")
