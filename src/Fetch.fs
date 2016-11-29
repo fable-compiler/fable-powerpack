@@ -8,6 +8,7 @@ open System
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
+open Fable.PowerPack.Result
 
 module Fetch_types =
 
@@ -338,6 +339,7 @@ module Fetch_types =
 
 open Fetch_types
 
+
 /// Retrieves data from the specified resource.
 let fetch (url: string) (init: RequestProperties list) : JS.Promise<Response> =
     GlobalFetch.fetch(RequestInfo.Url url, unbox init)
@@ -349,11 +351,21 @@ let fetch (url: string) (init: RequestProperties list) : JS.Promise<Response> =
             // TODO this should probably throw a custom error type
             failwith (string response.Status + " " + response.StatusText + " for URL " + response.Url))
 
+
+let tryFetch (url: string) (init: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
+    fetch url init |> Promise.result
+
+
 /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
 let [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<'T> =
     fetch url init
     |> Promise.bind (fun fetched -> fetched.text())
-    |> Promise.map (fun json -> ofJson<'T> json)
+    |> Promise.map ofJson<'T>
+
+
+let [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<Result<'T, Exception>> =
+    fetchAs url init |> Promise.result
+
 
 /// Sends a HTTP post with the record serialized as JSON.
 /// This function already sets the HTTP Method to POST sets the json into the body.
@@ -364,3 +376,7 @@ let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list
              RequestProperties.Headers [ContentType "application/json"]
              RequestProperties.Body (unbox (toJson record))], properties)
     fetch url (unbox props)
+
+
+let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
+    postRecord url record properties |> Promise.result

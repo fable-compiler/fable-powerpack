@@ -42,8 +42,8 @@
     <Reference Include="../node_modules/fable-core/Fable.Core.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Promise.fs" />
     <Compile Include="Result.fs" />
+    <Compile Include="Promise.fs" />
     <Compile Include="Fetch.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
