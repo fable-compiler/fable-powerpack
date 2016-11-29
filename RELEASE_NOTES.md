@@ -1,3 +1,7 @@
+### 0.0.17
+
+* Adding in tryFetch, tryFetchAs, and tryPostRecord (see #3)
+
 ### 0.0.16
 
 * `fetch`, `fetchAs`, and `postRecord` now throw an exception on non-2xx HTTP status codes
