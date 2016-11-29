@@ -8,6 +8,7 @@ module Promise =
     open Fable.Core
     open Fable.Import
     open Fable.Core.JsInterop
+    open Fable.PowerPack.Result
 
     let inline private (!!) (x:obj): 'T = unbox x
 
@@ -38,6 +39,20 @@ module Promise =
 
     [<Emit("Promise.all($0)")>]
     let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
+
+    let result (a: JS.Promise<'A>): JS.Promise<Result<'A, Exception>> =
+        either Ok Error a
+
+    let mapResult (fn: 'A -> 'B) (a: JS.Promise<Result<'A, 'E>>): JS.Promise<Result<'B, 'E>> =
+        a |> map (Result.map fn)
+
+    let bindResult (fn: 'A -> JS.Promise<'B>) (a: JS.Promise<Result<'A, Exception>>): JS.Promise<Result<'B, Exception>> =
+        a |> bind (fun a ->
+            match a with
+            | Ok a ->
+                result (fn a)
+            | Error e ->
+                lift (Error e))
 
     type PromiseBuilder() =
         [<Emit("$1.then($2)")>]
