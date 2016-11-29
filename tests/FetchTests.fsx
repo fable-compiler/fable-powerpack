@@ -57,7 +57,7 @@ it "tryFetch: unsuccessful HTTP status codes returns an Error" <| fun () ->
     tryFetch "http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it" []
     |> Promise.map (fun a ->
         match a with
-        | Success a -> "failed"
+        | Ok a -> "failed"
         | Error e -> e.Message)
     |> Promise.map (fun results ->
         results |> equal "404 Not Found for URL http://fable.io/this-must-be-an-invalid-url-no-really-i-mean-it")
@@ -66,7 +66,7 @@ it "tryFetch: exceptions return an Error" <| fun () ->
     tryFetch "http://this-must-be-an-invalid-url-no-really-i-mean-it.com" []
     |> Promise.map (fun a ->
         match a with
-        | Success a -> "failed"
+        | Ok a -> "failed"
         | Error e -> e.Message)
     |> Promise.map (fun results ->
         results |> equal "request to http://this-must-be-an-invalid-url-no-really-i-mean-it.com failed, reason: getaddrinfo ENOTFOUND this-must-be-an-invalid-url-no-really-i-mean-it.com this-must-be-an-invalid-url-no-really-i-mean-it.com:80")

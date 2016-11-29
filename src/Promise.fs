@@ -41,7 +41,7 @@ module Promise =
     let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
 
     let result (a: JS.Promise<'A>): JS.Promise<Result<'A, Exception>> =
-        either Success Error a
+        either Ok Error a
 
     let mapResult (fn: 'A -> 'B) (a: JS.Promise<Result<'A, 'E>>): JS.Promise<Result<'B, 'E>> =
         a |> map (Result.map fn)
@@ -49,7 +49,7 @@ module Promise =
     let bindResult (fn: 'A -> JS.Promise<'B>) (a: JS.Promise<Result<'A, Exception>>): JS.Promise<Result<'B, Exception>> =
         a |> bind (fun a ->
             match a with
-            | Success a ->
+            | Ok a ->
                 result (fn a)
             | Error e ->
                 lift (Error e))

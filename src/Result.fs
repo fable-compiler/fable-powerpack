@@ -1,33 +1,36 @@
 module Fable.PowerPack.Result
 
 
+// TODO replace this with F# 4.1 Result
 type Result<'A, 'B> =
-| Success of 'A
+| Ok of 'A
 | Error of 'B
 
 
 let unwrapResult a =
     match a with
-    | Success a -> a
+    | Ok a -> a
     | Error b -> raise b
 
 
+// TODO replace this with F# 4.1 map
 let map fn a =
     match a with
-    | Success a -> Success (fn a)
+    | Ok a -> Ok (fn a)
     | Error b -> Error b
 
 
+// TODO replace this with F# 4.1 bind
 let bind fn a =
     match a with
-    | Success a -> fn a
+    | Ok a -> fn a
     | Error b -> Error b
 
 
 // TODO implement TryFinally, TryWith, Using, While, and For ?
 type ResultBuilder() =
     member this.Bind(m, f) = bind f m
-    member this.Return<'A, 'E>(a: 'A): Result<'A, 'E> = Success a
+    member this.Return<'A, 'E>(a: 'A): Result<'A, 'E> = Ok a
     member this.ReturnFrom(m) = m
     member this.Zero = this.Return
 
@@ -37,7 +40,7 @@ type ResultBuilder() =
     (*member this.For<'A, 'E>(s: seq<'A>, fn: ('A -> Result<unit, 'E>)): Result<unit, 'E> =
         let error = Seq.tryFind (fun a ->
             match fn a with
-            | Success () -> false
+            | Ok () -> false
             | Error _ -> true) s
 
         match error with
