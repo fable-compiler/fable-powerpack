@@ -1,3 +1,7 @@
+### 0.0.18
+
+* Add `PromiseSeq` and experimental IndexedDB API
+
 ### 0.0.17
 
 * Adding in tryFetch, tryFetchAs, and tryPostRecord (see #3)

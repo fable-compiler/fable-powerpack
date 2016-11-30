@@ -44,7 +44,11 @@
   <ItemGroup>
     <Compile Include="Result.fs" />
     <Compile Include="Promise.fs" />
+    <Compile Include="PromiseSeq/Type.fs" />
+    <Compile Include="PromiseSeq/Module.fs" />
+    <Compile Include="PromiseSeq/Extensions.fs" />
     <Compile Include="Fetch.fs" />
+    <Compile Include="IndexedDB.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Choose>

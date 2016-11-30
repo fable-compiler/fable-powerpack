@@ -1,0 +1,6 @@
+{
+    "projFile": "./Program.fsx",
+    "rollup": {
+        "dest": "./out/app.js"
+    }
+}

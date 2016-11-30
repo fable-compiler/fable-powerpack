@@ -3,6 +3,7 @@
 .vscode/
 build/
 npm/
+tests/**/out
 
 # User-specific files
 *.suo
