@@ -270,6 +270,7 @@ module Fetch_types =
         | [<CompiledName("DELETE")>] DELETE
         | [<CompiledName("TRACE")>] TRACE
         | [<CompiledName("CONNECT")>] CONNECT
+        | [<CompiledName("PATCH")>] PATCH
 
     type IHttpRequestHeaders =
         interface end
@@ -380,3 +381,14 @@ let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list
 
 let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     postRecord url record properties |> Promise.result
+
+
+/// Sends a HTTP patch with the record serialized as JSON.
+/// This function already sets the HTTP Method to PATCH sets the json into the body.
+let patchRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Response> =
+    let props =
+        JS.Object.assign(
+            [RequestProperties.Method HttpMethod.PATCH
+             RequestProperties.Headers [ContentType "application/json"]
+             RequestProperties.Body (unbox (toJson record))], properties)
+    fetch url (unbox props)
