@@ -1,3 +1,7 @@
+### 0.0.19
+
+* Add HTTP verb patch support #4
+
 ### 0.0.18
 
 * Add `PromiseSeq` and experimental IndexedDB API
