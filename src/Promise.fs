@@ -37,7 +37,7 @@ module Promise =
     [<Emit("$2.then($0,$1)")>]
     let either (success: 'T->'R) (fail: Exception->'R) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 
-    [<Emit("$0.then(function(v){v;})")>]
+    [<Emit("$0.then(function(x){})")>]
     let start (pr: JS.Promise<'T>): unit = jsNative
 
     [<Emit("Promise.all($0)")>]

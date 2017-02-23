@@ -14,6 +14,9 @@ let inline equal (expected: 'T) (actual: 'T): unit =
 [<Global>]
 let it (msg: string) (f: unit->JS.Promise<'T>): unit = jsNative
 
+[<Global("it")>]
+let itSync (msg: string) (f: unit->unit): unit = jsNative
+
 it "Simple promise translates without exception" <| fun () ->
     promise { return () }
 
@@ -132,7 +135,7 @@ it "Promise try .. with returns correctly from 'with' branch" <| fun () ->
 //         }
 //         do! trampolineTest result 0
 //         equal !result true
-//     } |> Promise.map ignore
+//     }
 
 it "Nested failure propagates in promise expressions" <| fun () ->
     promise {
@@ -163,7 +166,7 @@ it "Nested failure propagates in promise expressions" <| fun () ->
         do! f()
         do! Promise.sleep 100
         equal "3 2 1" !data
-    } |> Promise.map ignore
+    }
 
 it "Try .. finally expressions inside promise expressions work" <| fun () ->
     promise {
@@ -180,7 +183,7 @@ it "Try .. finally expressions inside promise expressions work" <| fun () ->
         }
         do! Promise.sleep 100
         equal "1 2 3" !data
-    } |> Promise.map ignore
+    }
 
 it "Final statement inside promise expressions can throw" <| fun () ->
     promise {
@@ -198,4 +201,32 @@ it "Final statement inside promise expressions can throw" <| fun () ->
         }
         do! Promise.sleep 100
         equal "1 boom!" !data
-    } |> Promise.map ignore
+    }
+
+it "Promise.Bind propagates exceptions" <| fun () ->
+    promise {
+        let task2 name = promise {
+            // printfn "testing with %s" name
+            do! Promise.sleep 100 //difference between task1 and task2
+            if name = "fail" then
+                failwith "Invalid access credentials"
+            return "Ok"
+        }
+
+        let doWork name task =
+            promise {
+                let! b =
+                    task "fail"
+                    |> Promise.catch (fun ex -> ex.Message)
+                return b
+            }
+
+        let! res2 = doWork "task2" task2
+        equal "Invalid access credentials" res2
+    }
+
+itSync "Promise.start works" <| fun () ->
+    promise {
+        printfn "Promise started"
+        return 5
+    } |> Promise.start

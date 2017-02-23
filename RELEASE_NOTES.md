@@ -1,3 +1,7 @@
+### 0.0.20
+
+* Add `Promise.start`
+
 ### 0.0.19
 
 * Add HTTP verb patch support #4
