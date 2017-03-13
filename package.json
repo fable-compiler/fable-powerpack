@@ -3,7 +3,7 @@
   "version": "1.0.0-narumi-1",
   "description": "Utilities for Fable apps",
   "scripts": {
-    "pretest": "webpack",
+    "pretest": "webpack --config tests/webpack.config.js",
     "test": "mocha build"
   },
   "repository": {

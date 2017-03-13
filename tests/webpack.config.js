@@ -2,17 +2,21 @@ var path = require('path');
 var fs = require('fs');
 var child_process = require("child_process");
 
+function resolve(filePath) {
+  return path.resolve(__dirname, filePath)
+}
+
 var babelOptions = {
   "presets": [
-    [path.resolve(__dirname, "node_modules/babel-preset-es2015"), {"modules": false}]
+    [resolve("../node_modules/babel-preset-es2015"), {"modules": false}]
   ]
 }
 
 module.exports = {
-  entry: './tests/Tests.fsproj',
+  entry: resolve('./Tests.fsproj'),
   output: {
     filename: 'tests.bundle.js',
-    path: path.resolve(__dirname, 'build'),
+    path: resolve('../build'),
   },
   target: "node",
   module: {
