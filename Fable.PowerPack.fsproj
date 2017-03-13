@@ -1,0 +1,21 @@
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src/Result.fs" />
+    <Compile Include="src/Promise.fs" />
+    <Compile Include="src/PromiseSeq/Type.fs" />
+    <Compile Include="src/PromiseSeq/Module.fs" />
+    <Compile Include="src/PromiseSeq/Extensions.fs" />
+    <Compile Include="src/Fetch.fs" />
+    <Compile Include="src/IndexedDB.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-compile-fsc" Version="1.0.0-preview2-*" />
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.0-beta-060000" PrivateAssets="All" />
+    <PackageReference Include="FSharp.Core" Version="4.1.*" />
+    <PackageReference Include="Fable.Core" Version="1.0.0-narumi-5" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="1.0.0-narumi-5" />
+  </ItemGroup>
+</Project>
