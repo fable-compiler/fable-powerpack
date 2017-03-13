@@ -275,7 +275,6 @@ module Fetch_types =
     type IHttpRequestHeaders =
         interface end
 
-    [<KeyValueList>]
     type HttpRequestHeaders =
         | Accept of string
         | [<CompiledName("Accept-Charset")>] AcceptCharset of string
@@ -323,27 +322,27 @@ module Fetch_types =
         | [<CompiledName("Proxy-Connection")>] ProxyConnection of string
         | [<CompiledName("X-UIDH")>] XUIDH of string
         | [<CompiledName("X-Csrf-Token")>] XCsrfToken of string
-        interface IHttpRequestHeaders
 
-    type IRequestProperties =
-        interface end
-
-    [<KeyValueList; NoComparison>]
+    [<NoComparison>]
     type RequestProperties =
         | Method of HttpMethod
-        | Headers of HttpRequestHeaders list
+        | Headers of IHttpRequestHeaders
         | Body of BodyInit
         | Mode of RequestMode
         | Credentials of RequestCredentials
         | Cache of RequestCache
-        interface IRequestProperties
 
 open Fetch_types
 
+let inline requestHeaders (headers: HttpRequestHeaders list) =
+    RequestProperties.Headers(keyValueList CaseRules.None headers :?> IHttpRequestHeaders)
+
+let inline requestProps (props: RequestProperties list) =
+    keyValueList CaseRules.LowerFirst props :?> RequestInit
 
 /// Retrieves data from the specified resource.
 let fetch (url: string) (init: RequestProperties list) : JS.Promise<Response> =
-    GlobalFetch.fetch(RequestInfo.Url url, unbox init)
+    GlobalFetch.fetch(RequestInfo.Url url, requestProps init)
     |> Promise.map (fun response ->
         if response.Ok then
             response
@@ -358,13 +357,13 @@ let tryFetch (url: string) (init: RequestProperties list) : JS.Promise<Result<Re
 
 
 /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
-let [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<'T> =
+let  [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<'T> =
     fetch url init
     |> Promise.bind (fun fetched -> fetched.text())
     |> Promise.map ofJson<'T>
 
 
-let [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<Result<'T, Exception>> =
+let  [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<Result<'T, Exception>> =
     fetchAs url init |> Promise.result
 
 
@@ -372,13 +371,11 @@ let [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list)
 /// This function already sets the HTTP Method to POST sets the json into the body.
 let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Response> =
     let props =
-        JS.Object.assign(
-            [RequestProperties.Method HttpMethod.POST
-             RequestProperties.Headers [ContentType "application/json"]
-             RequestProperties.Body (unbox (toJson record))], properties)
-    fetch url (unbox props)
-
-
+        [ RequestProperties.Method HttpMethod.POST
+        ; requestHeaders [ContentType "application/json"]
+        ; RequestProperties.Body !^(toJson record)]
+        |> List.append properties
+    fetch url props
 let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     postRecord url record properties |> Promise.result
 
@@ -387,8 +384,8 @@ let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties l
 /// This function already sets the HTTP Method to PATCH sets the json into the body.
 let patchRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Response> =
     let props =
-        JS.Object.assign(
-            [RequestProperties.Method HttpMethod.PATCH
-             RequestProperties.Headers [ContentType "application/json"]
-             RequestProperties.Body (unbox (toJson record))], properties)
-    fetch url (unbox props)
+        [ RequestProperties.Method HttpMethod.PATCH
+        ; requestHeaders [ContentType "application/json"]
+        ; RequestProperties.Body !^(toJson record)]
+        |> List.append properties
+    fetch url props

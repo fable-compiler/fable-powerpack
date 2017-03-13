@@ -1,3 +1,7 @@
+### 1.0.0-beta-1
+
+* Update to Fable 1.0
+
 ### 0.0.20
 
 * Add `Promise.start`
