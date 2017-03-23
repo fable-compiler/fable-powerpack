@@ -1,6 +1,6 @@
 {
   "name": "fable-powerpack",
-  "version": "1.0.0-narumi-1",
+  "version": "1.0.0-narumi-2",
   "description": "Utilities for Fable apps",
   "scripts": {
     "pretest": "webpack --config tests/webpack.config.js",
