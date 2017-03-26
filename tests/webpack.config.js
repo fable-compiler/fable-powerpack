@@ -1,6 +1,5 @@
 var path = require('path');
 var fs = require('fs');
-var child_process = require("child_process");
 
 function resolve(filePath) {
   return path.resolve(__dirname, filePath)
