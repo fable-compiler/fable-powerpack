@@ -10,6 +10,7 @@ open Fable.Core.JsInterop
 open Fable.Import
 open Fable.PowerPack.Result
 
+[<AutoOpen>]
 module Fetch_types =
 
     type Body =
@@ -332,7 +333,6 @@ module Fetch_types =
         | Credentials of RequestCredentials
         | Cache of RequestCache
 
-open Fetch_types
 
 let inline requestHeaders (headers: HttpRequestHeaders list) =
     RequestProperties.Headers(keyValueList CaseRules.None headers :?> IHttpRequestHeaders)
