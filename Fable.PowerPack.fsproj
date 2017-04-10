@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="src/Result.fs" />
     <Compile Include="src/Promise.fs" />
+    <Compile Include="src/Json.fs" />
     <Compile Include="src/PromiseSeq/Type.fs" />
     <Compile Include="src/PromiseSeq/Module.fs" />
     <Compile Include="src/PromiseSeq/Extensions.fs" />
