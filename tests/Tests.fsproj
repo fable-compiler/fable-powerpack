@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="PromiseTests.fs" />
     <Compile Include="FetchTests.fs" />
+    <Compile Include="JsonTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
