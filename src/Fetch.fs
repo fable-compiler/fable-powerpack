@@ -374,7 +374,7 @@ let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list
         [ RequestProperties.Method HttpMethod.POST
         ; requestHeaders [ContentType "application/json"]
         ; RequestProperties.Body !^(toJson record)]
-        |> List.append properties
+        |> List.append <| properties
     fetch url props
 let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     postRecord url record properties |> Promise.result
@@ -387,5 +387,5 @@ let patchRecord<'T> (url: string) (record:'T) (properties: RequestProperties lis
         [ RequestProperties.Method HttpMethod.PATCH
         ; requestHeaders [ContentType "application/json"]
         ; RequestProperties.Body !^(toJson record)]
-        |> List.append properties
+        |> List.append <| properties
     fetch url props
