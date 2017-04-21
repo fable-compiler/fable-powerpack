@@ -370,12 +370,14 @@ let  [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list
 /// Sends a HTTP post with the record serialized as JSON.
 /// This function already sets the HTTP Method to POST sets the json into the body.
 let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Response> =
-    let props =
+    let defaultProps =
         [ RequestProperties.Method HttpMethod.POST
         ; requestHeaders [ContentType "application/json"]
         ; RequestProperties.Body !^(toJson record)]
-        |> List.append <| properties
-    fetch url props
+    // Append properties after defaultProps to make sure user-defined values
+    // override the default ones if necessary
+    List.append defaultProps properties
+    |> fetch url
 let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     postRecord url record properties |> Promise.result
 
@@ -383,9 +385,11 @@ let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties l
 /// Sends a HTTP patch with the record serialized as JSON.
 /// This function already sets the HTTP Method to PATCH sets the json into the body.
 let patchRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Response> =
-    let props =
+    let defaultProps =
         [ RequestProperties.Method HttpMethod.PATCH
         ; requestHeaders [ContentType "application/json"]
         ; RequestProperties.Body !^(toJson record)]
-        |> List.append <| properties
-    fetch url props
+    // Append properties after defaultProps to make sure user-defined values
+    // override the default ones if necessary
+    List.append defaultProps properties
+    |> fetch url
