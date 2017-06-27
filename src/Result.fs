@@ -10,7 +10,7 @@ type ResultBuilder() =
     member this.Bind(m, f) = Result.bind f m
     member this.Return<'A, 'E>(a: 'A): Result<'A, 'E> = Ok a
     member this.ReturnFrom(m) = m
-    member this.Zero = this.Return
+    member this.Zero() = this.Return()
 
     member this.Combine<'A, 'E>(left: Result<unit, 'E>, right: Result<'A, 'E>): Result<'A, 'E> =
         this.Bind(left, fun () -> right)

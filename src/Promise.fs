@@ -82,12 +82,12 @@ module Promise =
         member x.Return(a: 'T): JS.Promise<'T> = jsNative
 
         [<Emit("$1")>]
-        member x.ReturnFrom(p: JS.Promise<'T>) = jsNative
+        member x.ReturnFrom(p: JS.Promise<'T>): JS.Promise<'T> = jsNative
 
         [<Emit("Promise.resolve()")>]
         member x.Zero(): JS.Promise<unit> = jsNative
 
-        member x.TryFinally(p: JS.Promise<'T>, compensation: unit->unit) =
+        member x.TryFinally(p: JS.Promise<'T>, compensation: unit->unit): JS.Promise<'T> =
             either (fun x -> compensation(); x) (fun er -> compensation(); raise !!er) p
 
         [<Emit("$1.catch($2)")>]
