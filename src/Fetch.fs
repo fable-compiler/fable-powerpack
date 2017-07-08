@@ -323,6 +323,7 @@ module Fetch_types =
         | [<CompiledName("Proxy-Connection")>] ProxyConnection of string
         | [<CompiledName("X-UIDH")>] XUIDH of string
         | [<CompiledName("X-Csrf-Token")>] XCsrfToken of string
+        | [<Erase>] Custom of key:string * value:obj
 
     [<NoComparison>]
     type RequestProperties =
