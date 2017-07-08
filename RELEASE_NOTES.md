@@ -1,3 +1,7 @@
+r### 1.1.2
+
+* Add case to `HttpRequestHeaders` for custom headers
+
 ### 1.1.1
 
 * Constraint return type of PromiseBuilder.ReturnFrom
