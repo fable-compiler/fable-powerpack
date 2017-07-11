@@ -379,9 +379,23 @@ let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list
     // override the default ones if necessary
     List.append defaultProps properties
     |> fetch url
+    
 let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     postRecord url record properties |> Promise.result
 
+/// Sends a HTTP put with the record serialized as JSON.
+/// This function already sets the HTTP Method to PUT, sets the json into the body.
+let putRecord<'T> (url: string) (record:'T) (properties: RequestProperties list): JS.Promise<Response> =
+    let defaultProps =
+      [ RequestProperties.Method HttpMethod.PUT
+        ; requestHeaders [ContentType "application/json"]
+        ; RequestProperties.Body !^(toJson record)]
+    // Same as with postRecord, append the properties to make sure users override the defaults
+    List.append defaultProps properties
+    |> fetch url
+
+let tryPutRecord<'T> (url: string) (record:'T) (properties: RequestProperties list): JS.Promise<Result<Response, Exception>> =
+    putRecord url record properties |> Promise.result
 
 /// Sends a HTTP patch with the record serialized as JSON.
 /// This function already sets the HTTP Method to PATCH sets the json into the body.
