@@ -32,10 +32,24 @@ module Promise =
     let iter (a: 'T->unit) (pr: JS.Promise<'T>): unit = jsNative
 
     [<Emit("$1.catch($0)")>]
+    /// This version of `catch` fakes a function returning just 'T, as opposed to `Promise<'T>`.
+    /// If you need to return `Promise<'T>`, use `catchBind`.
     let catch (a: Exception->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
 
+    [<Emit("$1.catch($0)")>]
+    /// This is a version of `catch` that fakes a function returning Promise<'T> as opposed to just 'T. 
+    /// If you need to return just 'T, use `catch`.
+    let catchBind (a: Exception->JS.Promise<'T>) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
+
     [<Emit("$2.then($0,$1)")>]
-    let either (success: 'T->'R) (fail: Exception->'R) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
+    /// A combination of `bind` and `catch`, this function applies the `success` continuation when the input promise
+    /// resolves successfully, or `fail` continuation when the input promise fails. Both continuations may return either
+    /// naked value `'R` or another promise `Promise<'R>`. Use the erased-cast operator `!^` to cast values when returning,
+    /// for example:
+    ///    
+    ///      somePromise |> Promise.either (fun x -> !^(string x)) (fun err -> ^!(Promise.lift err.Message))
+    /// 
+    let either (success: 'T->U2<'R, JS.Promise<'R>>) (fail: Exception->U2<'R, JS.Promise<'R>>) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 
     [<Emit("$0.then(function(x){})")>]
     let start (pr: JS.Promise<'T>): unit = jsNative
@@ -44,7 +58,7 @@ module Promise =
     let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
 
     let result (a: JS.Promise<'A>): JS.Promise<Result<'A, Exception>> =
-        either Ok Error a
+        either (U2.Case1 << Ok) (U2.Case1 << Error) a
 
     let mapResult (fn: 'A -> 'B) (a: JS.Promise<Result<'A, 'E>>): JS.Promise<Result<'B, 'E>> =
         a |> map (Result.map fn)
@@ -88,7 +102,7 @@ module Promise =
         member x.Zero(): JS.Promise<unit> = jsNative
 
         member x.TryFinally(p: JS.Promise<'T>, compensation: unit->unit): JS.Promise<'T> =
-            either (fun x -> compensation(); x) (fun er -> compensation(); raise !!er) p
+            either (fun (x: 'T) -> compensation(); U2.Case1 x) (fun er -> compensation(); raise !!er) p
 
         [<Emit("$1.catch($2)")>]
         member x.TryWith(p: JS.Promise<'T>, catchHandler: Exception->JS.Promise<'T>): JS.Promise<'T> = jsNative

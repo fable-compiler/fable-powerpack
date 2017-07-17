@@ -224,6 +224,36 @@ it "Promise.Bind propagates exceptions" <| fun () ->
         equal "Invalid access credentials" res2
     }
 
+it "Promise.catchBind takes a Promise-returning function" <| fun () ->
+    promise {
+        let pr = promise {
+            failwith "Boo!"
+            return "Ok"
+        }
+        let exHandler (e: exn) = promise {
+            return e.Message
+        }
+
+        let! res = pr |> Promise.catchBind exHandler
+        res |> equal "Boo!" 
+    }
+
+it "Promise.either can take all combinations of value-returning and Promise-returning continuations" <| fun () ->
+    promise {
+        let failing = promise { failwith "Boo!" }
+        let successful = Promise.lift 42
+
+        let! r1 = successful |> Promise.either (fun x -> !^(string x)) (fun x -> failwith "Shouldn't get called")
+        let! r2 = successful |> Promise.either (fun x -> !^(Promise.lift <| string x)) (fun x -> failwith "Shouldn't get called")
+        let! r3 = failing |> Promise.either (fun x -> failwith "Shouldn't get called") (fun ex -> !^ex.Message)
+        let! r4 = failing |> Promise.either (fun x -> failwith "Shouldn't get called") (fun ex -> !^(Promise.lift ex.Message))
+
+        r1 |> equal "42"
+        r2 |> equal "42"
+        r3 |> equal "Boo!"
+        r4 |> equal "Boo!"
+    }
+
 itSync "Promise.start works" <| fun () ->
     promise {
         printfn "Promise started"
