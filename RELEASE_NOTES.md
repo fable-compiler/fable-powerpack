@@ -1,3 +1,4 @@
+### 1.2.0
 
 * Add `Promise.catchBind` - a variant of `catch` that takes a continuation returning `Promise<'T>`.
 * **BREAKING CHANGE**: The signature of `Promise.either` has changed: both `success` and `fail` continuations are now required to return `U2<'T, Promise<'T>>` (which matches the ECMA spec).
