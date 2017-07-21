@@ -31,12 +31,12 @@ module Promise =
     [<Emit("$1.then($0)")>]
     let iter (a: 'T->unit) (pr: JS.Promise<'T>): unit = jsNative
 
-    [<Emit("$1.then(undefined, $0)")>]
+    [<Emit("$1.then(void 0, $0)")>]
     /// This version of `catch` fakes a function returning just 'T, as opposed to `Promise<'T>`.
     /// If you need to return `Promise<'T>`, use `catchBind`.
     let catch (a: Exception->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
 
-    [<Emit("$1.then(undefined, $0)")>]
+    [<Emit("$1.then(void 0, $0)")>]
     /// This is a version of `catch` that fakes a function returning Promise<'T> as opposed to just 'T. 
     /// If you need to return just 'T, use `catch`.
     let catchBind (a: Exception->JS.Promise<'T>) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
