@@ -1,0 +1,217 @@
+<html>
+  <head>
+    <meta charSet="utf-8"/>
+    <title>
+      Fable Powerpack | Json
+    </title>
+    <link rel="shortcut icon" href="http://fable.io/fable-powerpack/assets/favicon-16x16.png"/>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/fsharp.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://fable.io/fable-powerpack/css/style.css"/>
+  </head>
+  <body>
+    <section class="hero is-fable-blue">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered">
+            <div class="column is-4 is-offset-4 has-text-centered">
+              <p class="title">
+                Fable Powerpack
+              </p>
+              <p class="subtitle">
+                Utilities for your Fable apps
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <div class="container">
+          <div class="tabs is-centered is-toggle">
+            <ul>
+              <li id="tab-home">
+                <a href="http://fable.io/fable-powerpack/">
+                  Home
+                </a>
+              </li>
+              <li id="tab-fetch">
+                <a href="http://fable.io/fable-powerpack/posts/fetch.html">
+                  Fetch
+                </a>
+              </li>
+              <li id="tab-json">
+                <a href="http://fable.io/fable-powerpack/posts/json.html">
+                  Json
+                </a>
+              </li>
+              <li id="tab-promise">
+                <a href="http://fable.io/fable-powerpack/posts/promises.html">
+                  Promise
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <div class="content">
+          <h1 id="post-title">
+            Json
+          </h1>
+          <p>The Json utility allow you to parse any Json object via pattern matching.</p>
+<p>You can either use classic function style or computation expression to parse your Json.</p>
+<p>For next samples we will consider the following types:</p>
+<pre><code class="language-fs">type UserDef =
+    { firstname : string
+      country : string }
+
+type JsonDef =
+    { size : int
+      users : UserDef list }
+</code></pre>
+<p>The json to parse is:</p>
+<pre><code class="language-fs">let jsonTxt =
+    &quot;&quot;&quot;
+{
+    &quot;size&quot;: 3,
+    &quot;users&quot;: [
+        {
+            &quot;firstname&quot;: &quot;Maxime&quot;,
+            &quot;country&quot;: &quot;France&quot;
+        },
+        {
+            &quot;firstname&quot;: &quot;Alfonso&quot;,
+            &quot;country&quot;: &quot;Spain&quot;
+        },
+        {
+            &quot;firstname&quot;: &quot;Forki&quot;,
+            &quot;country&quot;: &quot;Germany&quot;
+        }
+    ]
+}
+    &quot;&quot;&quot;
+</code></pre>
+<h2>Using standard function</h2>
+<pre><code class="language-fs">
+// Helpers function to unwrap a Json value
+let unwrapNumber a =
+    match a with
+    | Json.Number a -&gt; a
+    | _ -&gt; failwith &quot;Invalid JSON, it must be a number&quot;
+
+let unwrapString a =
+    match a with
+    | Json.String a -&gt; a
+    | _ -&gt; failwith &quot;Invalid JSON, it must be a string&quot;
+
+let unwrapObject a =
+    match a with
+    | Json.Object a -&gt; Map.ofArray a
+    | _ -&gt; failwith &quot;Invalid JSON, it must be an object&quot;
+
+let unwrapArray a =
+    match a with
+    | Json.Array a -&gt; a
+    | _ -&gt; failwith &quot;Invalid JSON, it must be an array&quot;
+
+// Convert the Json string into Json DU
+let json = jsonTxt |&gt; Json.ofString |&gt; unwrapResult |&gt; unwrapObject
+
+let sizeValue = json |&gt; Map.find &quot;size&quot; |&gt; unwrapNumber
+let users = json |&gt; Map.find &quot;users&quot; |&gt; unwrapArray
+
+let userList =
+    [ for user in users do
+        let obj = user |&gt; unwrapObject
+        let firstname = obj |&gt; Map.find &quot;firstname&quot; |&gt; unwrapString
+        let country = obj |&gt; Map.find &quot;country&quot; |&gt; unwrapString
+        yield { firstname = firstname
+                country = country }
+    ]
+
+{ size = int sizeValue
+  users = userList } // Here we have our json extracted
+</code></pre>
+<h2>Using computation expression</h2>
+<pre><code class="language-fs">
+// Helpers to extract the Json values into a Result type
+let number a =
+    match a with
+    | Json.Number a -&gt; Ok(a)
+    | _ -&gt; Error(System.Exception(&quot;Invalid JSON, it must be a number&quot;))
+
+let string a =
+    match a with
+    | Json.String a -&gt; Ok(a)
+    | _ -&gt; Error(System.Exception(&quot;Invalid JSON, it must be a string&quot;))
+
+let lookup (key: string) (a: Map&lt;string, Json.Json&gt;) =
+    match Map.tryFind key a with
+    | Some(a) -&gt; Ok(a)
+    | None -&gt; Error(System.Exception(&quot;Could not find key &quot; + key))
+
+let object a =
+    match a with
+    | Json.Object a -&gt; Ok(Map.ofArray a)
+    | _ -&gt; Error(System.Exception(&quot;Invalid JSON, it must be an object&quot;))
+
+let array a =
+    match a with
+    | Json.Array a -&gt; Ok(a)
+    | _ -&gt; Error(System.Exception(&quot;Invalid JSON, it must be an array&quot;))
+
+
+result {
+    let! json = jsonTxt |&gt; Json.ofString |&gt; Result.bind object
+
+    let! sizeValue = json |&gt; lookup &quot;size&quot; |&gt; Result.bind number
+    let! users = json |&gt; lookup &quot;users&quot; |&gt; Result.bind array
+
+    let userList =
+        seq {
+            for user in users -&gt;
+                result {
+                    let! obj = user |&gt; object
+                    let! firstname = obj |&gt; lookup &quot;firstname&quot; |&gt; Result.bind string
+                    let! country = obj |&gt; lookup &quot;country&quot; |&gt; Result.bind string
+                    return { firstname = firstname
+                             country = country }
+                }
+        }
+        // Make sure all the users are valid
+        |&gt; Seq.map unwrapResult
+
+    return { size = int sizeValue
+             users = List.ofSeq userList }
+}
+// We unwrap the result
+// Make sure the parser succeeded
+|&gt; unwrapResult
+</code></pre>
+
+        </div>
+      </div>
+    </section>
+    <script>
+      
+// Init highlight
+hljs.initHighlightingOnLoad();
+
+// Set active menu
+var pageTitle = document.getElementById("post-title");
+
+if (pageTitle) {
+    var suffix = pageTitle.innerText.toLowerCase();
+    var activeTab = document.getElementById("tab-" + suffix);
+    activeTab.classList.add("is-active");
+} else
+    document.getElementById("tab-home").classList.add("is-active");
+    
+    </script>
+  </body>
+</html>

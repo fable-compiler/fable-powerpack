@@ -1,0 +1,139 @@
+<html>
+  <head>
+    <meta charSet="utf-8"/>
+    <title>
+      Fable Powerpack | Fetch
+    </title>
+    <link rel="shortcut icon" href="http://fable.io/fable-powerpack/assets/favicon-16x16.png"/>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/fsharp.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://fable.io/fable-powerpack/css/style.css"/>
+  </head>
+  <body>
+    <section class="hero is-fable-blue">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered">
+            <div class="column is-4 is-offset-4 has-text-centered">
+              <p class="title">
+                Fable Powerpack
+              </p>
+              <p class="subtitle">
+                Utilities for your Fable apps
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <div class="container">
+          <div class="tabs is-centered is-toggle">
+            <ul>
+              <li id="tab-home">
+                <a href="http://fable.io/fable-powerpack/">
+                  Home
+                </a>
+              </li>
+              <li id="tab-fetch">
+                <a href="http://fable.io/fable-powerpack/posts/fetch.html">
+                  Fetch
+                </a>
+              </li>
+              <li id="tab-json">
+                <a href="http://fable.io/fable-powerpack/posts/json.html">
+                  Json
+                </a>
+              </li>
+              <li id="tab-promise">
+                <a href="http://fable.io/fable-powerpack/posts/promises.html">
+                  Promise
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <div class="content">
+          <h1 id="post-title">
+            Fetch
+          </h1>
+          <p>Fetch is an API making request over network easier than with <code>XMLHttpRequest</code>. It's allow you to write your request using &quot;pipeline&quot; style.</p>
+<h2>Access</h2>
+<p>To acces the fetch API, you need to use the following <code>open</code> declaration</p>
+<pre><code class="language-fs">open Fable.PowerPack
+open Fable.PowerPack.Fetch
+</code></pre>
+<h2>Basic</h2>
+<p>In the next snippet, we are getting the content of <code>http://fable.io</code> page.</p>
+<pre><code class="language-fs">    fetch &quot;http://fable.io&quot; []
+    |&gt; Promise.bind (fun res -&gt; res.text())
+    |&gt; Promise.map (fun txt -&gt;
+        // Access here your ressource
+        Browser.console.log txt
+    )
+</code></pre>
+<p>We can write the same request using <strong>Promise computation</strong>.</p>
+<pre><code class="language-fs">    promise {
+        let! res = fetch &quot;http://fable.io&quot; []
+        let! txt = res.text()
+        // Access here your ressource
+        Browser.console.log txt
+    }
+</code></pre>
+<h2>Send a POST request with data</h2>
+<pre><code class="language-fs">    // This is the data we want to send to the server
+    let data = {
+        Username: &quot;Maxime&quot;
+        Password: &quot;myPassword&quot;
+    }
+
+    let defaultProps =
+        [ RequestProperties.Method HttpMethod.POST
+        ; requestHeaders [ContentType &quot;application/json&quot;]
+        ; RequestProperties.Body unbox(toJson data)]
+    
+    promise {
+        let! res = fetch &quot;http://my-server.com/sign-in&quot; defaultProps
+        let txt = res.text()
+        // Here you got access to the server response
+        if txt = &quot;true&quot; then
+            // Sign in: OK
+        else
+            // Sign in: Failed
+    }    
+</code></pre>
+<p>Fable Powerpack already implement some general helpers for you like:</p>
+<ul>
+<li>postRecord: Sends a HTTP post with the record serialized as JSON.</li>
+<li>tryPostRecord: Sends a HTTP post with the record serialized as JSON. And encapsulate it into a <code>Result</code> case.</li>
+<li>putRecord: Sends a HTTP put with the record serialized as JSON.</li>
+<li>etc.</li>
+</ul>
+
+        </div>
+      </div>
+    </section>
+    <script>
+      
+// Init highlight
+hljs.initHighlightingOnLoad();
+
+// Set active menu
+var pageTitle = document.getElementById("post-title");
+
+if (pageTitle) {
+    var suffix = pageTitle.innerText.toLowerCase();
+    var activeTab = document.getElementById("tab-" + suffix);
+    activeTab.classList.add("is-active");
+} else
+    document.getElementById("tab-home").classList.add("is-active");
+    
+    </script>
+  </body>
+</html>
