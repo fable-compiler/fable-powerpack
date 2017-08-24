@@ -255,3 +255,4 @@ paket-files/
 .idea/
 *.sln.iml
 docs/_public/
+temp/
