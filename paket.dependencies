@@ -3,3 +3,10 @@ source https://www.nuget.org/api/v2
 nuget FSharp.Core
 nuget Fable.Core
 nuget Fable.Import.Browser
+
+group Build
+framework: net46
+
+    source https://nuget.org/api/v2
+    nuget FSharp.Core  redirects:force, content:none
+    nuget FAKE
