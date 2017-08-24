@@ -10,23 +10,11 @@ type Model = {
 }
 
 let generate (siteModel : SiteModel) (mdl : Model) (posts : Post list) (content : string) =
-    let psts =
-        posts
-        |> List.map (fun p ->
-            article [ Class "post"] [
-                h1 [ Class "post-title"] [
-                    a [Href p.link] [ !! p.title ]
-                ]
-                div [Class "post-date"] [(!! (defaultArg (p.published |> Option.map (fun p -> p.ToShortDateString())) ""))]
-                !! p.content
-            ]
-        )
-
     let links =
         posts
         |> List.map (fun p ->
             li [ ]
-               [ a [ Href p.link
+               [ a [ Href (Default.host + (p.link.Substring(1)))
                      Class "is-fable-blue" ] [ !!p.title ] ]
         )
 
