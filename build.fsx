@@ -5,10 +5,60 @@
 open System
 open System.IO
 open Fake
-open Fake.NpmHelper
+open Fake.YarnHelper
 open Fake.Git
 
+let dotnetcliVersion = "2.0.0"
+
+let mutable dotnetExePath = "dotnet"
+let runDotnet dir =
+    DotNetCli.RunCommand (fun p -> { p with ToolPath = dotnetExePath
+                                            WorkingDir = dir } )
+
+Target "InstallDotNetCore" (fun _ ->
+   dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
+)
+
 Target "Clean" (fun _ ->
+    !! "bin"
+    ++ "obj"
+    |> CleanDirs
+)
+
+Target "Install" (fun _ ->
+    runDotnet "" "restore"
+)
+
+Target "InstallYarn" (fun _ ->
+    Yarn (fun p ->
+            { p with
+                Command = Install Standard
+            })
+)
+
+Target "Build" (fun _ ->
+    runDotnet "" "build"
+)
+
+Target "CleanTests" (fun _->
+    !! "tests/bin"
+    ++ "tests/obj"
+    |> CleanDirs
+)
+
+Target "InstallTests" (fun _ ->
+    runDotnet "tests" "restore"
+)
+
+Target "BuildTests" (fun _ ->
+    runDotnet "tests" "build"
+)
+
+Target "RunTests" (fun _ ->
+    runDotnet "" "fable npm-run test --port free"
+)
+
+Target "CleanDocs" (fun _ ->
   seq [
     "docs/_public"
     "docs/.sass-cache"
@@ -52,10 +102,21 @@ Target "PublishDocs" (fun _ ->
   Branches.push temp
 )
 
-// Build order
 "Clean"
+    ==> "InstallDotNetCore"
+    ==> "Install"
+    ==> "Build"
+    ==> "InstallYarn"
+    ==> "CleanTests"
+    ==> "InstallTests"
+    ==> "BuildTests"
+    ==> "RunTests"
+
+
+// Build order
+"CleanDocs"
     ==> "BuildDocs"
     ==> "PublishDocs"
 
 // start build
-RunTargetOrDefault "BuildDocs"
+RunTargetOrDefault "Build"
