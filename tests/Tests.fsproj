@@ -6,6 +6,7 @@
     <Compile Include="PromiseTests.fs" />
     <Compile Include="FetchTests.fs" />
     <Compile Include="JsonTests.fs" />
+    <Compile Include="DateFormatTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

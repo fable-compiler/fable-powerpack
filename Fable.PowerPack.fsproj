@@ -13,6 +13,8 @@
     <Compile Include="src/PromiseSeq/Extensions.fs" />
     <Compile Include="src/Fetch.fs" />
     <Compile Include="src/IndexedDB.fs" />
+    <Compile Include="src/Date/Local.fs" />
+    <Compile Include="src/Date/Format.fs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="*.fsproj" PackagePath="fable\" />

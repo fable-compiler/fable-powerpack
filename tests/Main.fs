@@ -7,3 +7,4 @@ open Fable.Core.JsInterop
 importAll "./FetchTests.fs"
 importAll "./PromiseTests.fs"
 importAll "./JsonTests.fs"
+importAll "./DateFormatTests.fs"
