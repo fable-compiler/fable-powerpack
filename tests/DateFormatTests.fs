@@ -171,7 +171,7 @@ describe "DateFormat tests" <| fun _ ->
             Date.Format.format testDate "MMMM"
             |> equal "August"
 
-    describe "Pattern 's': The second, from 00 through 59" <| fun () ->
+    describe "Pattern 's': The second, from 0 through 59" <| fun () ->
         it "1 digit second works" <| fun () ->
             let testDate = DateTime(2017, 8, 8, 0, 0, 3)
             Date.Format.format testDate "s"
