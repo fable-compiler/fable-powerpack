@@ -392,5 +392,16 @@ describe "DateFormat tests" <| fun _ ->
     describe "Escaping character work" <| fun () ->
         it "Escape work" <| fun _ ->
             let testDate = DateTime(2017, 8, 22, 1, 0, 33)
-            Date.Format.localFormat Date.Local.french testDate "yyyy-MM-dd hh:mm:ss \d \y \M\M"
+            Date.Format.format testDate "yyyy-MM-dd hh:mm:ss \d \y \M\M"
             |> equal "2017-08-22 01:00:33 d y MM"
+
+    describe "Localization" <| fun _ ->
+        it "French works" <| fun _ ->
+            let testDate = DateTime(2017, 8, 22, 1, 0, 33)
+            Date.Format.localFormat Date.Local.french testDate "dddd"
+            |> equal "Mardi"
+
+        it "English works" <| fun _ ->
+            let testDate = DateTime(2017, 8, 22, 1, 0, 33)
+            Date.Format.localFormat Date.Local.english testDate "dddd"
+            |> equal "Tuesday"
