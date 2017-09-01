@@ -1,3 +1,8 @@
+### 1.3.0-beta-001
+
+* Add `Date` module
+* Improve tests readability
+
 ### 1.2.0
 
 * Add `Promise.catchBind` - a variant of `catch` that takes a continuation returning `Promise<'T>`.
