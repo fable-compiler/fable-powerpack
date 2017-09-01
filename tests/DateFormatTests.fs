@@ -388,3 +388,9 @@ describe "DateFormat tests" <| fun _ ->
             let testDate = DateTime(2019, 1, 1, 0, 0, 0)
             Date.Format.format testDate "yyyyy"
             |> equal "02019"
+
+    describe "Escaping character work" <| fun () ->
+        it "Escape work" <| fun _ ->
+            let testDate = DateTime(2017, 8, 22, 1, 0, 33)
+            Date.Format.localFormat Date.Local.french testDate "yyyy-MM-dd hh:mm:ss \d \y \M\M"
+            |> equal "2017-08-22 01:00:33 d y MM"
