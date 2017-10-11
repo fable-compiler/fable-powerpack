@@ -1,0 +1,216 @@
+<html>
+  <head>
+    <meta charSet="utf-8"/>
+    <title>
+      Fable Powerpack | Date Format
+    </title>
+    <link rel="shortcut icon" href="http://fable.io/fable-powerpack/assets/favicon-16x16.png"/>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/fsharp.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://fable.io/fable-powerpack/css/style.css"/>
+  </head>
+  <body>
+    <section class="hero is-fable-blue">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered">
+            <div class="column is-4 is-offset-4 has-text-centered">
+              <p class="title">
+                Fable Powerpack
+              </p>
+              <p class="subtitle">
+                Utilities for your Fable apps
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <div class="container">
+          <div class="tabs is-centered is-toggle">
+            <ul>
+              <li id="tab-home">
+                <a href="http://fable.io/fable-powerpack/">
+                  Home
+                </a>
+              </li>
+              <li id="tab-date format">
+                <a href="http://fable.io/fable-powerpack/posts/date_format.html">
+                  Date Format
+                </a>
+              </li>
+              <li id="tab-fetch">
+                <a href="http://fable.io/fable-powerpack/posts/fetch.html">
+                  Fetch
+                </a>
+              </li>
+              <li id="tab-json">
+                <a href="http://fable.io/fable-powerpack/posts/json.html">
+                  Json
+                </a>
+              </li>
+              <li id="tab-promise">
+                <a href="http://fable.io/fable-powerpack/posts/promises.html">
+                  Promise
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <div class="content">
+          <h1 id="post-title">
+            Date Format
+          </h1>
+          <h2>Basic</h2>
+<p>Date module allow you to format a date according to a pattern.</p>
+<pre><code class="language-fs">open Fable.PowerPack
+
+Date.Format.format testDate &quot;yyyy-MM-dd hh:mm:ss&quot;
+// Result: &quot;2017-08-22 01:00:33&quot;
+
+Date.Format.format testDate &quot;dddd, MMMM dd, yyyy&quot;
+// Result: &quot;Tuesday, August 22, 2017&quot;
+</code></pre>
+<h2>Localization</h2>
+<pre><code class="language-fs">open Fable.PowerPack
+
+Date.Format.localFormat Date.Local.french testDate &quot;dddd, dd MMMM yyyy&quot;
+// Result: &quot;Mardi, 22 août 2017&quot;
+</code></pre>
+<h2>Supported formats</h2>
+<p>Here is all the pattern supported and their description. This patterns are from .Net so you can find more information <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings">here</a>.</p>
+<table class="table is-narrow is-striped">
+    <thead>
+        <tr>
+            <th>Pattern</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>d</td>
+            <td>The day of the month, from 1 through 31</td>
+        </tr>
+        <tr>
+            <td>dd</td>
+            <td>The day of the month, from 01 through 31</td>
+        </tr>
+        <tr>
+            <td>ddd</td>
+            <td>The abbreviated name of the day of the week</td>
+        </tr>
+        <tr>
+            <td>dddd</td>
+            <td>The full name of the day of the week</td>
+        </tr>
+        <tr>
+            <td>h</td>
+            <td>The hour, using a 12-hour clock from 1 to 12</td>
+        </tr>
+        <tr>
+            <td>hh</td>
+            <td>The hour, using a 12-hour clock from 01 to 12</td>
+        </tr>
+        <tr>
+            <td>H</td>
+            <td>The hour, using a 24-hour clock from 0 to 23</td>
+        </tr>
+        <tr>
+            <td>HH</td>
+            <td>The hour, using a 24-hour clock from 00 to 23</td>
+        </tr>
+        <tr>
+            <td>m</td>
+            <td>The minute, from 0 through 59</td>
+        </tr>
+        <tr>
+            <td>mm</td>
+            <td>The minute, from 00 through 59</td>
+        </tr>
+        <tr>
+            <td>M</td>
+            <td>The month, from 1 through 12</td>
+        </tr>
+        <tr>
+            <td>MM</td>
+            <td>The month, from 01 through 12</td>
+        </tr>
+        <tr>
+            <td>MMM</td>
+            <td>The abbreviated name of the month</td>
+        </tr>
+        <tr>
+            <td>MMMM</td>
+            <td>The full name of the month</td>
+        </tr>
+        <tr>
+            <td>s</td>
+            <td>The second, from 00 through 59</td>
+        </tr>
+        <tr>
+            <td>ss</td>
+            <td>The second, from 00 through 59</td>
+        </tr>
+        <tr>
+            <td>t</td>
+            <td>The first character of the AM/PM designator</td>
+        </tr>
+        <tr>
+            <td>tt</td>
+            <td>The AM/PM designator</td>
+        </tr>
+        <tr>
+            <td>y</td>
+            <td>The year, from 0 to 99</td>
+        </tr>
+        <tr>
+            <td>yy</td>
+            <td>The year, from 00 to 99</td>
+        </tr>
+        <tr>
+            <td>yyy</td>
+            <td>The year, with a minimum of three digits</td>
+        </tr>
+        <tr>
+            <td>yyyy</td>
+            <td>The year as a four-digit number</td>
+        </tr>
+        <tr>
+            <td>yyyyy</td>
+            <td>The year as a five-digit number</td>
+        </tr>
+        <tr>
+            <td>\</td>
+            <td>Escape the next character</td>
+        </tr>
+    </tbody>
+</table>
+
+        </div>
+      </div>
+    </section>
+    <script>
+      
+// Init highlight
+hljs.initHighlightingOnLoad();
+
+// Set active menu
+var pageTitle = document.getElementById("post-title");
+
+if (pageTitle) {
+    var suffix = pageTitle.innerText.toLowerCase();
+    var activeTab = document.getElementById("tab-" + suffix);
+    activeTab.classList.add("is-active");
+} else
+    document.getElementById("tab-home").classList.add("is-active");
+    
+    </script>
+  </body>
+</html>
