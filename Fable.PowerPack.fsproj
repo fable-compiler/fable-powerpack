@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src/Result.fs" />
+    <Compile Include="src/Keyboard.fs" />
     <Compile Include="src/Promise.fs" />
     <Compile Include="src/Json.fs" />
     <Compile Include="src/PromiseSeq/Type.fs" />
