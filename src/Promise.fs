@@ -49,7 +49,7 @@ module Promise =
     ///    
     ///      somePromise |> Promise.either (fun x -> !^(string x)) (fun err -> ^!(Promise.lift err.Message))
     /// 
-    let either (success: 'T->U2<'R, JS.Promise<'R>>) (fail: Exception->U2<'R, JS.Promise<'R>>) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
+    let either (success: 'T->U2<'R, JS.Promise<'R>>) (fail: 'E->U2<'R, JS.Promise<'R>>) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 
     [<Emit("$0.then(function(x){})")>]
     let start (pr: JS.Promise<'T>): unit = jsNative
@@ -57,7 +57,7 @@ module Promise =
     [<Emit("Promise.all($0)")>]
     let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
 
-    let result (a: JS.Promise<'A>): JS.Promise<Result<'A, Exception>> =
+    let result (a: JS.Promise<'A>): JS.Promise<Result<'A, 'E>> =
         either (U2.Case1 << Ok) (U2.Case1 << Error) a
 
     let mapResult (fn: 'A -> 'B) (a: JS.Promise<Result<'A, 'E>>): JS.Promise<Result<'B, 'E>> =
