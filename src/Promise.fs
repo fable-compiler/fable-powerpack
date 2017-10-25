@@ -63,7 +63,7 @@ module Promise =
     let mapResult (fn: 'A -> 'B) (a: JS.Promise<Result<'A, 'E>>): JS.Promise<Result<'B, 'E>> =
         a |> map (Result.map fn)
 
-    let bindResult (fn: 'A -> JS.Promise<'B>) (a: JS.Promise<Result<'A, Exception>>): JS.Promise<Result<'B, Exception>> =
+    let bindResult (fn: 'A -> JS.Promise<'B>) (a: JS.Promise<Result<'A, 'E>>): JS.Promise<Result<'B, 'E>> =
         a |> bind (fun a ->
             match a with
             | Ok a ->
