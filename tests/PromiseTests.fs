@@ -249,8 +249,8 @@ describe "Promise tests" <| fun _ ->
 
             let! r1 = successful |> Promise.either (fun x -> !^(string x)) (fun x -> failwith "Shouldn't get called")
             let! r2 = successful |> Promise.either (fun x -> !^(Promise.lift <| string x)) (fun x -> failwith "Shouldn't get called")
-            let! r3 = failing |> Promise.either (fun x -> failwith "Shouldn't get called") (fun ex -> !^ex.Message)
-            let! r4 = failing |> Promise.either (fun x -> failwith "Shouldn't get called") (fun ex -> !^(Promise.lift ex.Message))
+            let! r3 = failing |> Promise.either (fun x -> failwith "Shouldn't get called") (fun (ex:Exception) -> !^ex.Message)
+            let! r4 = failing |> Promise.either (fun x -> failwith "Shouldn't get called") (fun (ex:Exception) -> !^(Promise.lift ex.Message))
 
             r1 |> equal "42"
             r2 |> equal "42"
