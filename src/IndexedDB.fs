@@ -53,13 +53,18 @@ type IDBImplementation =
     abstract member Upgrade: Browser.IDBDatabase -> unit
 
 let openCursor(index: Browser.IDBIndex, keyCursor: bool, range: Browser.IDBKeyRange option, direction: DBCursorDirection option, step: uint32 option) =
-    let range = defaultArg range Unchecked.defaultof<Browser.IDBKeyRange>
     let direction = (defaultArg direction DBCursorDirection.Default).ToString()
     let step = defaultArg step 1u
     let request =
         match keyCursor with
-        | false -> index.openCursor(range, direction)
-        | true -> index.openKeyCursor(range, direction)
+        | false -> 
+          match range with
+          | Some range -> index.openCursor(range, direction=direction)
+          | None -> index.openCursor(?range=None, direction=direction)
+        | true -> 
+          match range with
+          | Some range -> index.openKeyCursor(range, direction=direction)
+          | None -> index.openKeyCursor(?range=None, direction=direction)
     let rec cursorSeq() = promiseSeq {
         let! result = Promise.create(fun cont _ ->
             request.onsuccess <- fun _ ->
