@@ -13,11 +13,10 @@ let inline equal (expected: 'T) (actual: 'T): unit =
 [<Global>]
 let it (msg: string) (f: unit->unit): unit = jsNative
 
-[<Emit("new SyntaxError($0)")>]
-let SyntaxException (a: string): Exception = jsNative
-
 [<Global>]
 let describe (msg: string) (f: unit->unit): unit = jsNative
+
+let isError = function Error _ -> true | Ok _ -> false
 
 describe "Json tests" <| fun _ ->
     it "Parsing works" <| fun () ->
@@ -45,10 +44,10 @@ describe "Json tests" <| fun _ ->
     it "Parsing arrays works" <| fun () ->
         ofString "[1, 2, 3]" |> equal (Ok (Array [| Number 1.0; Number 2.0; Number 3.0 |]))
 
-    it "Parsing bad input works" <| fun () ->
+    it "Parsing bad input works I" <| fun () ->
         // TODO put the syntax error message
-        ofString "" |> equal (Error (SyntaxException ""))
+        ofString "" |> isError |> equal true
 
-    it "Parsing bad input works" <| fun () ->
+    it "Parsing bad input works II" <| fun () ->
         // TODO put the syntax error message
-        ofString "{" |> equal (Error (SyntaxException ""))
+        ofString "{" |> isError |> equal true

@@ -2,13 +2,15 @@
 #r "./packages/build/FAKE/tools/FakeLib.dll"
 #r "System.IO.Compression.FileSystem"
 
+#load "paket-files/build/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
+
 open System
-open System.IO
 open Fake
 open Fake.YarnHelper
 open Fake.Git
 
 let dotnetcliVersion = "2.0.0"
+let packages = ["Fable.PowerPack"]
 
 let mutable dotnetExePath = "dotnet"
 let runDotnet dir =
@@ -74,23 +76,17 @@ let temp        = fableRoot </> "temp"
 let docsDir = fableRoot </> "docs"
 let docsOuput = docsDir </> "_public"
 let fornax = "fornax"
-let args = "build"
 
 Target "BuildDocs" (fun _ ->
-    let fileName, args =
-        if EnvironmentHelper.isUnix
-        then fornax, args else "cmd", ("/C " + fornax + " " + args)
-
-    let ok =
-        execProcess (fun info ->
-            info.FileName <- fileName
-            info.WorkingDirectory <- docsDir
-            info.Arguments <- args) TimeSpan.MaxValue
-    if not ok then failwith (sprintf "'%s> %s %s' task failed" docsDir fileName args)
+    Fable.FakeHelpers.run docsDir fornax "build"
 )
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
+
+Target "PublishPackage" (fun _ ->
+  Fable.FakeHelpers.publishPackages __SOURCE_DIRECTORY__ dotnetExePath packages
+)
 
 Target "PublishDocs" (fun _ ->
   CleanDir temp
@@ -112,6 +108,8 @@ Target "PublishDocs" (fun _ ->
     ==> "BuildTests"
     ==> "RunTests"
 
+"RunTests"
+    ==> "PublishPackage"
 
 // Build order
 "CleanDocs"

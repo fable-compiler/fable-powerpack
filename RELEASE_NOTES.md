@@ -1,3 +1,9 @@
+### 1.3.1
+
+* Fixes to indexedDB and promise test #33
+* Make Error type in `Promise.bindResult` generic
+* Add keyboard codes
+
 ### 1.3.0-beta-001
 
 * Add `Date` module
