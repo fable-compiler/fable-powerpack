@@ -9,8 +9,7 @@ open Fable.PowerPack.Fetch
 open Fable.PowerPack.Result
 
 let inline equal (expected: 'T) (actual: 'T): unit =
-    let assert' = importAll<obj> "assert"
-    assert'?equal(actual, expected) |> ignore
+    Testing.Assert.AreEqual(expected, actual)
 
 [<Global>]
 let it (msg: string) (f: unit->JS.Promise<'T>): unit = jsNative

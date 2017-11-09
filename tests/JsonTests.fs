@@ -7,8 +7,7 @@ open Fable.Import
 open Fable.PowerPack.Json
 
 let inline equal (expected: 'T) (actual: 'T): unit =
-    let assert' = importAll<obj> "assert"
-    assert'?deepStrictEqual(actual, expected) |> ignore
+    Testing.Assert.AreEqual(expected, actual)
 
 [<Global>]
 let it (msg: string) (f: unit->unit): unit = jsNative
