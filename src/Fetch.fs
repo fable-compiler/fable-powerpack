@@ -365,7 +365,7 @@ let  [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) :
         try
             ofJson<'T> s
         with
-        | exn -> failwithf "Could not deserialize %s into type %s. Message: %s" s ((typeof s).ToString()) exn.Message)
+        | exn -> failwith "Could not deserialize \"" + s + "\" into type " + ((typeof s).ToString()) + ". Message: " + exn.Message)
 
 
 let  [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<Result<'T, Exception>> =
