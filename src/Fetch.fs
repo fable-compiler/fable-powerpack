@@ -361,7 +361,11 @@ let tryFetch (url: string) (init: RequestProperties list) : JS.Promise<Result<Re
 let  [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<'T> =
     fetch url init
     |> Promise.bind (fun fetched -> fetched.text())
-    |> Promise.map ofJson<'T>
+    |> Promise.map (fun s ->
+        try
+            ofJson<'T> s
+        with
+        | exn -> failwithf "Could not deserialize %s into type %s. Message: %s" s ((typeof s).ToString()) exn.Message)
 
 
 let  [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<Result<'T, Exception>> =
