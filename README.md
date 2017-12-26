@@ -2,6 +2,6 @@
 
 Utilities for Fable apps.
 
-Run `dotnet restore` and `yarn install` to install dotnet and npm dependencies respectively.
+Run `yarn` to install npm and dotnet dependencies.
 
-Run `dotnet fable npm-run test` to compile and run the tests.
+Run `yarn test` to compile and run the tests.

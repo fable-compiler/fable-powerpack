@@ -1,120 +1,73 @@
 // include Fake libs
 #r "./packages/build/FAKE/tools/FakeLib.dll"
 #r "System.IO.Compression.FileSystem"
-
+#load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
 #load "paket-files/build/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
 
-open System
 open Fake
-open Fake.YarnHelper
-open Fake.Git
+open Fable.FakeHelpers
+open Octokit
 
-let dotnetcliVersion = "2.0.0"
-let packages = ["Fable.PowerPack"]
+#if MONO
+// prevent incorrect output encoding (e.g. https://github.com/fsharp/FAKE/issues/1196)
+System.Console.OutputEncoding <- System.Text.Encoding.UTF8
+#endif
 
-let mutable dotnetExePath = "dotnet"
-let runDotnet dir =
-    DotNetCli.RunCommand (fun p -> { p with ToolPath = dotnetExePath
-                                            WorkingDir = dir } )
+let project = "fable-powerpack"
+let gitOwner = "fable-compiler"
 
-Target "InstallDotNetCore" (fun _ ->
-   dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
-)
+let dotnetcliVersion = "2.1.3"
+let mutable dotnetExePath = environVarOrDefault "DOTNET" "dotnet"
 
-Target "Clean" (fun _ ->
-    !! "bin"
-    ++ "obj"
-    |> CleanDirs
-)
+let CWD = __SOURCE_DIRECTORY__
 
-Target "Install" (fun _ ->
-    runDotnet "" "restore"
-)
+module Yarn =
+    open YarnHelper
 
-Target "InstallYarn" (fun _ ->
-    Yarn (fun p ->
+    let install workingDir =
+        Yarn (fun p ->
             { p with
-                Command = Install Standard
+                Command = YarnCommand.Install InstallArgs.Standard
+                WorkingDirectory = workingDir
             })
+
+    let run workingDir script args =
+        Yarn (fun p ->
+            { p with
+                Command = YarnCommand.Custom ("run " + script + " " + args)
+                WorkingDirectory = workingDir
+            })
+
+// Clean and install dotnet SDK
+Target "Bootstrap" (fun () ->
+    !! "bin" ++ "obj" ++ "tests/bin" ++ "tests/obj" |> CleanDirs
+    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
 )
 
-Target "Build" (fun _ ->
-    runDotnet "" "build"
+Target "Test" (fun () ->
+    Yarn.install CWD
+    Yarn.run CWD "test" ""
 )
 
-Target "CleanTests" (fun _->
-    !! "tests/bin"
-    ++ "tests/obj"
-    |> CleanDirs
+Target "PublishPackages" (fun () ->
+    [ "Fable.PowerPack.fsproj"]
+    |> publishPackages CWD dotnetExePath
 )
 
-Target "InstallTests" (fun _ ->
-    runDotnet "tests" "restore"
+Target "GitHubRelease" (fun () ->
+    let releasePath = CWD </> "RELEASE_NOTES.md"
+    githubRelease releasePath gitOwner project (fun user pw release ->
+        createClient user pw
+        |> createDraft gitOwner project release.NugetVersion
+            (release.SemVer.PreRelease <> None) release.Notes
+        |> releaseDraft
+        |> Async.RunSynchronously
+    )
 )
 
-Target "BuildTests" (fun _ ->
-    runDotnet "tests" "build"
-)
+"Bootstrap"
+==> "Test"
+==> "PublishPackages"
+==> "GitHubRelease"
 
-Target "RunTests" (fun _ ->
-    runDotnet "" "fable npm-run test --port free"
-)
-
-Target "CleanDocs" (fun _ ->
-  seq [
-    "docs/_public"
-    "docs/.sass-cache"
-  ] |> CleanDirs
-)
-
-// --------------------------------------------------------------------------------------
-// Generate the documentation
-let githubLink = "git@github.com:fable-compiler/fable-powerpack.git"
-let publishBranch = "gh-pages"
-let fableRoot   = __SOURCE_DIRECTORY__
-let temp        = fableRoot </> "temp"
-let docsDir = fableRoot </> "docs"
-let docsOuput = docsDir </> "_public"
-let fornax = "fornax"
-
-Target "BuildDocs" (fun _ ->
-    Fable.FakeHelpers.run docsDir fornax "build"
-)
-
-// --------------------------------------------------------------------------------------
-// Release Scripts
-
-Target "PublishPackage" (fun _ ->
-  Fable.FakeHelpers.publishPackages __SOURCE_DIRECTORY__ dotnetExePath packages
-)
-
-Target "PublishDocs" (fun _ ->
-  CleanDir temp
-  Repository.cloneSingleBranch "" githubLink publishBranch temp
-
-  CopyRecursive docsOuput temp true |> tracefn "%A"
-  StageAll temp
-  Git.Commit.Commit temp (sprintf "Update site (%s)" (DateTime.Now.ToShortDateString()))
-  Branches.push temp
-)
-
-"Clean"
-    ==> "InstallDotNetCore"
-    ==> "Install"
-    ==> "Build"
-    ==> "InstallYarn"
-    ==> "CleanTests"
-    ==> "InstallTests"
-    ==> "BuildTests"
-    ==> "RunTests"
-
-"RunTests"
-    ==> "PublishPackage"
-
-// Build order
-"CleanDocs"
-    ==> "BuildDocs"
-    ==> "PublishDocs"
-
-// start build
-RunTargetOrDefault "Build"
+RunTargetOrDefault "Bootstrap"

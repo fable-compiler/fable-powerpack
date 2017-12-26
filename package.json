@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "pretest": "webpack --config tests/webpack.config.js",
+    "postinstall": "dotnet restore && dotnet restore tests",
+    "pretest": "dotnet fable webpack -- --config tests/webpack.config.js",
     "test": "mocha build"
   },
   "devDependencies": {
