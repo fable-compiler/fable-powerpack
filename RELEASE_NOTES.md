@@ -1,3 +1,8 @@
+### 1.3.2
+
+* Add BrowserLocalStorage helpers
+* Add Promise.catchEnd, eitherEnd and tryStart
+
 ### 1.3.1
 
 * Fixes to indexedDB and promise test #33
