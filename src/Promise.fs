@@ -32,27 +32,32 @@ module Promise =
     let iter (a: 'T->unit) (pr: JS.Promise<'T>): unit = jsNative
 
     [<Emit("$1.then(void 0, $0)")>]
-    /// This version of `catch` fakes a function returning just 'T, as opposed to `Promise<'T>`.
-    /// If you need to return `Promise<'T>`, use `catchBind`.
-    let catch (a: Exception->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
+    /// This version of `catch` fakes a function returning just 'T, as opposed to `Promise<'T>`. If you need to return `Promise<'T>`, use `catchBind`.
+    let catch (fail: Exception->'T) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
 
     [<Emit("$1.then(void 0, $0)")>]
-    /// This is a version of `catch` that fakes a function returning Promise<'T> as opposed to just 'T. 
-    /// If you need to return just 'T, use `catch`.
-    let catchBind (a: Exception->JS.Promise<'T>) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
+    /// This is a version of `catch` that fakes a function returning Promise<'T> as opposed to just 'T. If you need to return just 'T, use `catch`.
+    let catchBind (fail: Exception->JS.Promise<'T>) (pr: JS.Promise<'T>): JS.Promise<'T> = jsNative
+
+    [<Emit("$1.then(void 0, $0)")>]
+    /// Used to catch errors at the end of a promise chain.
+    let catchEnd (fail: Exception->unit) (pr: JS.Promise<'T>): unit = jsNative
 
     [<Emit("$2.then($0,$1)")>]
-    /// A combination of `bind` and `catch`, this function applies the `success` continuation when the input promise
-    /// resolves successfully, or `fail` continuation when the input promise fails. Both continuations may return either
-    /// naked value `'R` or another promise `Promise<'R>`. Use the erased-cast operator `!^` to cast values when returning,
-    /// for example:
-    ///    
-    ///      somePromise |> Promise.either (fun x -> !^(string x)) (fun err -> ^!(Promise.lift err.Message))
-    /// 
+    /// A combination of `map/bind` and `catch/catchBind`, this function applies the `success` continuation when the input promise resolves successfully, or `fail` continuation when the input promise fails. Both continuations may return either naked value `'R` or another promise `Promise<'R>`. Use the erased-cast operator `!^` to cast values when returning, for example:
+    /// ```
+    /// somePromise |> Promise.either (fun x -> !^(string x)) (fun err -> ^!(Promise.lift err.Message))
+    /// ```
     let either (success: 'T->U2<'R, JS.Promise<'R>>) (fail: 'E->U2<'R, JS.Promise<'R>>) (pr: JS.Promise<'T>): JS.Promise<'R> = jsNative
 
-    [<Emit("$0.then(function(x){})")>]
+    [<Emit("$2.then($0,$1)")>]
+    let eitherEnd (success: 'T->unit) (fail: 'E->unit) (pr: JS.Promise<'T>): unit = jsNative
+
+    [<Emit("$0.then()")>]
     let start (pr: JS.Promise<'T>): unit = jsNative
+
+    [<Emit("$1.then(void 0, $0)")>]
+    let tryStart (fail: Exception->unit) (pr: JS.Promise<'T>): unit = jsNative
 
     [<Emit("Promise.all($0)")>]
     let Parallel (pr: seq<JS.Promise<'T>>): JS.Promise<'T[]> = jsNative
