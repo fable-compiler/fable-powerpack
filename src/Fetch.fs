@@ -8,7 +8,6 @@ open System
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
-open Fable.PowerPack.Result
 
 [<AutoOpen>]
 module Fetch_types =
@@ -35,7 +34,7 @@ module Fetch_types =
 
     and RequestInit =
         abstract ``method``: string option with get, set
-        abstract headers: U2<HeaderInit, obj> option with get, set
+        abstract headers: HeaderInit option with get, set
         abstract body: BodyInit option with get, set
         abstract mode: RequestMode option with get, set
         abstract credentials: RequestCredentials option with get, set
@@ -379,7 +378,7 @@ let postRecord<'T> (url: string) (record:'T) (properties: RequestProperties list
     // override the default ones if necessary
     List.append defaultProps properties
     |> fetch url
-    
+
 let tryPostRecord<'T> (url: string) (record:'T) (properties: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     postRecord url record properties |> Promise.result
 

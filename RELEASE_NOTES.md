@@ -1,3 +1,7 @@
+### 1.3.3
+
+* Update dependencies
+
 ### 1.3.2
 
 * Add BrowserLocalStorage helpers

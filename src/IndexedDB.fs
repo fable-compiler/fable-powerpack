@@ -57,18 +57,18 @@ let openCursor(index: Browser.IDBIndex, keyCursor: bool, range: Browser.IDBKeyRa
     let step = defaultArg step 1u
     let request =
         match keyCursor with
-        | false -> 
+        | false ->
           match range with
           | Some range -> index.openCursor(range, direction=direction)
           | None -> index.openCursor(?range=None, direction=direction)
-        | true -> 
+        | true ->
           match range with
           | Some range -> index.openKeyCursor(range, direction=direction)
           | None -> index.openKeyCursor(?range=None, direction=direction)
     let rec cursorSeq() = promiseSeq {
         let! result = Promise.create(fun cont _ ->
             request.onsuccess <- fun _ ->
-                request.onsuccess <- null
+                request.onsuccess <- !!null
                 if unbox<bool> request.result then
                     let cursor = unbox<Browser.IDBCursorWithValue> request.result
                     cont(Some(unbox<'T> cursor.value))
