@@ -404,3 +404,8 @@ describe "DateFormat tests" <| fun _ ->
             let testDate = DateTime(2017, 8, 22, 1, 0, 33)
             Date.Format.localFormat Date.Local.english testDate "dddd"
             |> equal "Tuesday"
+
+        it "Russian works" <| fun _ ->
+            let testDate = DateTime(2017, 8, 22, 1, 0, 33)
+            Date.Format.localFormat Date.Local.russian testDate "dddd"
+            |> equal "Вторник"
