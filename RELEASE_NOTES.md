@@ -1,3 +1,7 @@
+### 1.3.4
+
+* Date.Local Russian localization (@irium)
+
 ### 1.3.3
 
 * Update dependencies
