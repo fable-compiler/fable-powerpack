@@ -263,3 +263,13 @@ describe "Promise tests" <| fun _ ->
             printfn "    Promise started"
             return 5
         } |> Promise.start
+
+    it "Promise mapResultError works correctly" <| fun () ->
+        Result.Error "foo"
+        |> Promise.lift
+        |> Promise.mapResultError (fun (msg:string) -> 666)
+        |> Promise.map (fun exnRes ->
+            match exnRes with
+            | Ok _ -> failwith "Shouldn't get called"
+            | Error e -> equal 666 e
+        )

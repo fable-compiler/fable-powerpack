@@ -76,6 +76,9 @@ module Promise =
             | Error e ->
                 lift (Error e))
 
+    let mapResultError (fn: 'B -> 'C) (a: JS.Promise<Result<'A,'B>>): JS.Promise<Result<'A,'C>> =
+        a |> map (Result.mapError fn)
+
     type PromiseBuilder() =
         [<Emit("$1.then($2)")>]
         member x.Bind(p: JS.Promise<'T>, f: 'T->JS.Promise<'R>): JS.Promise<'R> = jsNative
