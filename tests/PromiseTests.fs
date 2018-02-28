@@ -273,3 +273,13 @@ describe "Promise tests" <| fun _ ->
             | Ok _ -> failwith "Shouldn't get called"
             | Error e -> equal 666 e
         )
+
+    it "Promise.tap passes original value through to next transform" <| fun () ->
+        Promise.lift(5)
+            |> Promise.tap(fun x ->
+                x |> equal 5
+                ()
+            )
+            |> Promise.map (fun x ->
+                x |> equal 5
+            )

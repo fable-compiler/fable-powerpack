@@ -78,6 +78,9 @@ module Promise =
 
     let mapResultError (fn: 'B -> 'C) (a: JS.Promise<Result<'A,'B>>): JS.Promise<Result<'A,'C>> =
         a |> map (Result.mapError fn)
+    
+    let tap (fn: 'A -> unit) (a: JS.Promise<'A>): JS.Promise<'A> = 
+        a |> map (fun x -> fn x; x)
 
     type PromiseBuilder() =
         [<Emit("$1.then($2)")>]
