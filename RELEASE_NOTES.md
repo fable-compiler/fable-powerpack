@@ -1,3 +1,8 @@
+### 1.3.5
+
+* Add Promise.mapResultError (@nojaf)
+* Add Promise.tap (@johnsonw)
+
 ### 1.3.4
 
 * Date.Local Russian localization (@irium)
