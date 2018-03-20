@@ -29,7 +29,9 @@ module Local =
         { Months : Months
           AbbreviatedMonths : Months
           Days : DaysOfWeek
-          AbbreviatedDays : DaysOfWeek }
+          AbbreviatedDays : DaysOfWeek
+          DefaultFormat : string
+          FirstDayOfTheWeek : int }
 
     type Time =
         { AM : string
@@ -82,7 +84,9 @@ module Local =
                   Thursday = "Thu"
                   Friday = "Fri"
                   Saturday = "Sat"
-                  Sunday = "Sun" } }
+                  Sunday = "Sun" }
+              DefaultFormat = "d/M/yyyy"
+              FirstDayOfTheWeek = 1 }
           Time =
             { AM = "AM"
               PM = "PM" } }
@@ -130,7 +134,9 @@ module Local =
                   Thursday = "Jeu"
                   Friday = "Ven"
                   Saturday = "Sam"
-                  Sunday = "Dim" } }
+                  Sunday = "Dim" }
+              DefaultFormat = "d/M/yyyy"
+              FirstDayOfTheWeek = 1 }
           Time =
             { AM = ""
               PM = "" } }
@@ -178,7 +184,9 @@ module Local =
                   Thursday = "Чтв"
                   Friday = "Птн"
                   Saturday = "Сбт"
-                  Sunday = "Вск" } }
+                  Sunday = "Вск" }
+              DefaultFormat = "d.M.yyyy"
+              FirstDayOfTheWeek = 1 }
           Time =
             { AM = ""
               PM = "" } }
@@ -226,7 +234,9 @@ module Local =
                   Thursday = "Csüt"
                   Friday = "Pén"
                   Saturday = "Szo"
-                  Sunday = "Vas" } }
+                  Sunday = "Vas" }
+              DefaultFormat = "yyyy.MM.dd."
+              FirstDayOfTheWeek = 1 }
           Time =
             { AM = "de"
               PM = "du" } }

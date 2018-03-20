@@ -409,3 +409,31 @@ describe "DateFormat tests" <| fun _ ->
             let testDate = DateTime(2017, 8, 22, 1, 0, 33)
             Date.Format.localFormat Date.Local.russian testDate "dddd"
             |> equal "Вторник"
+
+        it "Hungarian works" <| fun _ ->
+            let testDate = DateTime(2017, 8, 22, 1, 0, 33)
+            Date.Format.localFormat Date.Local.hungarian testDate "dddd"
+            |> equal "Kedd"
+
+    describe "Localization - default date format" <| fun _ ->
+        let testDate = DateTime(2017, 8, 22, 1, 0, 33)
+
+        it "French works" <| fun _ ->
+            let locale = Date.Local.french
+            Date.Format.localFormat locale testDate locale.Date.DefaultFormat
+            |> equal "22/8/2017"
+
+        it "English works" <| fun _ ->
+            let locale = Date.Local.english
+            Date.Format.localFormat locale testDate locale.Date.DefaultFormat
+            |> equal "22/8/2017"
+
+        it "Russian works" <| fun _ ->
+            let locale = Date.Local.russian
+            Date.Format.localFormat locale testDate locale.Date.DefaultFormat
+            |> equal "22.8.2017"
+
+        it "Hungarian works" <| fun _ ->
+            let locale = Date.Local.hungarian
+            Date.Format.localFormat locale testDate locale.Date.DefaultFormat
+            |> equal "2017.08.22."
