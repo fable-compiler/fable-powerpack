@@ -44,7 +44,7 @@ module Format =
     let internal takeLastChars count (str : string) =
         str.Substring(Math.Max(0, str.Length - count))
 
-    let localFormat (local : Localization) (date : DateTime) formatString =
+    let localFormat (local : Localization) formatString (date : DateTime) =
         Regex.Replace(
             formatString,
             "(d{1,4})|(h{1,2})|(H{1,2})|(m{1,2})|(M{1,4})|(s{1,2})|(t{1,2})|(y{1,5})|(\\\.?)",
@@ -94,4 +94,4 @@ module Format =
             ))
         )
 
-    let format (date : DateTime) formatString = localFormat Local.english date formatString
+    let format formatString (date : DateTime) = localFormat Local.english formatString date

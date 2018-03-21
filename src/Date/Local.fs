@@ -1,4 +1,5 @@
 namespace Fable.PowerPack.Date
+open System
 
 module Local =
 
@@ -31,7 +32,7 @@ module Local =
           Days : DaysOfWeek
           AbbreviatedDays : DaysOfWeek
           DefaultFormat : string
-          FirstDayOfTheWeek : int }
+          FirstDayOfTheWeek : DayOfWeek }
 
     type Time =
         { AM : string
@@ -41,7 +42,7 @@ module Local =
         { Date : Date
           Time : Time }
 
-    let english =
+    let english<'T> =
         { Date =
             { Months =
                 { January = "January"
@@ -86,12 +87,12 @@ module Local =
                   Saturday = "Sat"
                   Sunday = "Sun" }
               DefaultFormat = "d/M/yyyy"
-              FirstDayOfTheWeek = 1 }
+              FirstDayOfTheWeek = DayOfWeek.Monday }
           Time =
             { AM = "AM"
               PM = "PM" } }
 
-    let french =
+    let french<'T> =
         { Date =
             { Months =
                 { January = "Janvier"
@@ -136,12 +137,12 @@ module Local =
                   Saturday = "Sam"
                   Sunday = "Dim" }
               DefaultFormat = "d/M/yyyy"
-              FirstDayOfTheWeek = 1 }
+              FirstDayOfTheWeek = DayOfWeek.Monday }
           Time =
             { AM = ""
               PM = "" } }
 
-    let russian =
+    let russian<'T> =
         { Date =
             { Months =
                 { January = "Январь"
@@ -186,12 +187,12 @@ module Local =
                   Saturday = "Сбт"
                   Sunday = "Вск" }
               DefaultFormat = "d.M.yyyy"
-              FirstDayOfTheWeek = 1 }
+              FirstDayOfTheWeek = DayOfWeek.Monday }
           Time =
             { AM = ""
               PM = "" } }
 
-    let hungarian =
+    let hungarian<'T> =
         { Date =
             { Months =
                 { January = "Január"
@@ -236,7 +237,7 @@ module Local =
                   Saturday = "Szo"
                   Sunday = "Vas" }
               DefaultFormat = "yyyy.MM.dd."
-              FirstDayOfTheWeek = 1 }
+              FirstDayOfTheWeek = DayOfWeek.Monday }
           Time =
             { AM = "de"
               PM = "du" } }
