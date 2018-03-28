@@ -141,3 +141,16 @@ module Promise =
 [<AutoOpen>]
 module PromiseImpl =
     let promise = Promise.PromiseBuilder()
+
+    type Promise.PromiseBuilder with
+        [<CustomOperation("and!", IsLikeZip=true)>]
+        member x.Merge(a, b, [<ProjectionParameter>] resultSelector : _ -> _) =
+            promise {
+                Promise.start a
+                Promise.start b
+                let! a' = a
+                let! b' = b
+                return resultSelector a' b'
+            }
+
+        member x.For(m, f) = x.Bind(m, f)
