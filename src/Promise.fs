@@ -98,6 +98,9 @@ module Promise =
                 p <- !!p?``then``(fun () -> body a)
             p
 
+        [<Emit("$1.then($2)")>]
+        member x.For(p: JS.Promise<'T>, f: 'T->JS.Promise<'R>): JS.Promise<'R> = jsNative
+
         member x.While(guard, p): JS.Promise<unit> =
             if guard()
             then bind (fun () -> x.While(guard, p)) p
@@ -138,19 +141,13 @@ module Promise =
         member x.Using<'T, 'R when 'T :> IDisposable>(resource: 'T, binder: 'T->JS.Promise<'R>): JS.Promise<'R> =
             x.TryFinally(binder(resource), fun () -> resource.Dispose())
 
+        [<CustomOperation("and!", IsLikeZip=true)>]
+        member x.Merge(a: JS.Promise<'T1>, b: JS.Promise<'T2>, [<ProjectionParameter>] resultSelector : 'T1 -> 'T2 -> 'R): JS.Promise<'R> =
+            bind (fun (result: obj[]) ->
+                match result with
+                | [|a';b'|] -> lift (resultSelector (unbox<'T1> a') (unbox<'T2> b'))
+                | _ -> !!JS.Promise.reject(sprintf "Expected two results, but received %i." result.Length)) (Parallel [|map box a; map box b|])
+
 [<AutoOpen>]
 module PromiseImpl =
     let promise = Promise.PromiseBuilder()
-
-    type Promise.PromiseBuilder with
-        [<CustomOperation("and!", IsLikeZip=true)>]
-        member x.Merge(a, b, [<ProjectionParameter>] resultSelector : _ -> _) =
-            promise {
-                Promise.start a
-                Promise.start b
-                let! a' = a
-                let! b' = b
-                return resultSelector a' b'
-            }
-
-        member x.For(m, f) = x.Bind(m, f)
