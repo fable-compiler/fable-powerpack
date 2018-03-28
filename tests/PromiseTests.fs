@@ -283,3 +283,16 @@ describe "Promise tests" <| fun _ ->
             |> Promise.map (fun x ->
                 x |> equal 5
             )
+    
+    it "Promise can be run in parallel with ``and!`` extension" <| fun () ->
+        let one = Promise.lift 1
+        let two = Promise.lift 2
+        promise {
+            for a in one do
+            ``and!`` b in two
+            return a + b
+        }
+        |> Promise.tap (fun result ->
+            result |> equal 3
+            ()
+        )
