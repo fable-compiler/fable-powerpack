@@ -141,12 +141,9 @@ module Promise =
         member x.Using<'T, 'R when 'T :> IDisposable>(resource: 'T, binder: 'T->JS.Promise<'R>): JS.Promise<'R> =
             x.TryFinally(binder(resource), fun () -> resource.Dispose())
 
+        [<Emit("Promise.all([$1,$2]).then(([a,b]) => $3(a,b))")>]
         [<CustomOperation("and!", IsLikeZip=true)>]
-        member x.Merge(a: JS.Promise<'T1>, b: JS.Promise<'T2>, [<ProjectionParameter>] resultSelector : 'T1 -> 'T2 -> 'R): JS.Promise<'R> =
-            bind (fun (result: obj[]) ->
-                match result with
-                | [|a';b'|] -> lift (resultSelector (unbox<'T1> a') (unbox<'T2> b'))
-                | _ -> !!JS.Promise.reject(sprintf "Expected two results, but received %i." result.Length)) (Parallel [|map box a; map box b|])
+        member x.Merge(a: JS.Promise<'T1>, b: JS.Promise<'T2>, [<ProjectionParameter>] resultSelector : 'T1 -> 'T2 -> 'R): JS.Promise<'R> = jsNative
 
 [<AutoOpen>]
 module PromiseImpl =
