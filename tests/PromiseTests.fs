@@ -289,7 +289,7 @@ describe "Promise tests" <| fun _ ->
         let two = Promise.lift 2
         promise {
             for a in one do
-            ``and!`` b in two
+            andFor b in two
             return a + b
         }
         |> Promise.tap (fun result ->

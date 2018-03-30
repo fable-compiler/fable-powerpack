@@ -142,7 +142,7 @@ module Promise =
             x.TryFinally(binder(resource), fun () -> resource.Dispose())
 
         [<Emit("Promise.all([$1,$2]).then(([a,b]) => $3(a,b))")>]
-        [<CustomOperation("and!", IsLikeZip=true)>]
+        [<CustomOperation("andFor", IsLikeZip=true)>]
         member x.Merge(a: JS.Promise<'T1>, b: JS.Promise<'T2>, [<ProjectionParameter>] resultSelector : 'T1 -> 'T2 -> 'R): JS.Promise<'R> = jsNative
 
 [<AutoOpen>]
