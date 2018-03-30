@@ -284,7 +284,7 @@ describe "Promise tests" <| fun _ ->
                 x |> equal 5
             )
     
-    it "Promise can be run in parallel with ``and!`` extension" <| fun () ->
+    it "Promise can be run in parallel with andFor extension" <| fun () ->
         let one = Promise.lift 1
         let two = Promise.lift 2
         promise {
@@ -294,5 +294,20 @@ describe "Promise tests" <| fun _ ->
         }
         |> Promise.tap (fun result ->
             result |> equal 3
+            ()
+        )
+
+    it "Promise can run multiple tasks in parallel with andFor extension" <| fun () ->
+        let one = Promise.lift 1
+        let two = Promise.lift 2
+        let three = Promise.lift 3
+        promise {
+            for a in one do
+            andFor b in two
+            andFor c in three
+            return a + b = c
+        }
+        |> Promise.tap (fun result ->
+            result |> equal true
             ()
         )
