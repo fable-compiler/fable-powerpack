@@ -1,3 +1,7 @@
+### 1.3.6
+
+* Add `andFor` operator for parallelization in promise CE (@panesofglass)
+
 ### 1.3.5
 
 * Add Promise.mapResultError (@nojaf)

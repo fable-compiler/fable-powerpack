@@ -98,6 +98,9 @@ module Promise =
                 p <- !!p?``then``(fun () -> body a)
             p
 
+        [<Emit("$1.then($2)")>]
+        member x.For(p: JS.Promise<'T>, f: 'T->JS.Promise<'R>): JS.Promise<'R> = jsNative
+
         member x.While(guard, p): JS.Promise<unit> =
             if guard()
             then bind (fun () -> x.While(guard, p)) p
@@ -137,6 +140,10 @@ module Promise =
 
         member x.Using<'T, 'R when 'T :> IDisposable>(resource: 'T, binder: 'T->JS.Promise<'R>): JS.Promise<'R> =
             x.TryFinally(binder(resource), fun () -> resource.Dispose())
+
+        [<Emit("Promise.all([$1,$2]).then(([a,b]) => $3(a,b))")>]
+        [<CustomOperation("andFor", IsLikeZip=true)>]
+        member x.Merge(a: JS.Promise<'T1>, b: JS.Promise<'T2>, [<ProjectionParameter>] resultSelector : 'T1 -> 'T2 -> 'R): JS.Promise<'R> = jsNative
 
 [<AutoOpen>]
 module PromiseImpl =
