@@ -93,5 +93,3 @@ module Format =
                     | t -> failwithf "The token %s is not implemented. Please report it" t
             ))
         )
-
-    let format formatString (date : DateTime) = localFormat Local.english formatString date
