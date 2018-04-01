@@ -1,3 +1,7 @@
+### 1.4.0
+
+* Extend `Date.Local` (@AkosLukacs)
+
 ### 1.3.6
 
 * Add `andFor` operator for parallelization in promise CE (@panesofglass)
