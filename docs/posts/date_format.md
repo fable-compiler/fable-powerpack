@@ -11,10 +11,10 @@ Date module allow you to format a date according to a pattern.
 ```fs
 open Fable.PowerPack
 
-Date.Format.format testDate "yyyy-MM-dd hh:mm:ss"
+Date.Format.localFormat Date.Local.englishUK "yyyy-MM-dd hh:mm:ss" testDate
 // Result: "2017-08-22 01:00:33"
 
-Date.Format.format testDate "dddd, MMMM dd, yyyy"
+Date.Format.localFormat Date.Local.englishUK "dddd, MMMM dd, yyyy" testDate
 // Result: "Tuesday, August 22, 2017"
 ```
 
@@ -23,8 +23,15 @@ Date.Format.format testDate "dddd, MMMM dd, yyyy"
 ```fs
 open Fable.PowerPack
 
-Date.Format.localFormat Date.Local.french testDate "dddd, dd MMMM yyyy"
+Date.Format.localFormat Date.Local.french "dddd, dd MMMM yyyy" testDate
 // Result: "Mardi, 22 août 2017"
+
+// Use default date format:
+Date.Format.localFormat Date.Local.french Date.Local.french.Date.DefaultFormat testDate
+// Result: "22/3/2017"
+
+Date.Format.localFormat Date.Local.englishUS Date.Local.englishUS.Date.DefaultFormat testDate
+// Result: "3/22/2017"
 ```
 
 ## Supported formats

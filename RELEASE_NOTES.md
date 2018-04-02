@@ -1,6 +1,10 @@
 ### 1.4.0
 
 * Extend `Date.Local` (@AkosLukacs)
+  * Added `Date.DefaultFormat` with culture specific date format string
+  * `Date.Format.format` with english locale removed, use `localFormat` with your local
+  * Split `Date.Local.english` to `Date.Local.englishUS` and `Date.Local.englishUK` because default date formats differ
+  * The order of parameters for `Date.Format.localFormat`changed to allow partial application of local and format string
 
 ### 1.3.6
 
