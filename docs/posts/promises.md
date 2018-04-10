@@ -5,7 +5,7 @@ title: Promise
 
 ## Basic promise
 
-To build a promise you can use **Promise computation" which allow you a clean syntax to build them.
+To build a promise you can use **Promise computation** which allow you a clean syntax to build them.
 
 Example, here is a promise which return the result of `x + y` after `500ms` of delay
 
