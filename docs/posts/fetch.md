@@ -56,7 +56,7 @@ We can write the same request using **Promise computation**.
     
     promise {
         let! res = fetch "http://my-server.com/sign-in" defaultProps
-        let txt = res.text()
+        let! txt = res.text()
         // Here you got access to the server response
         if txt = "true" then
             // Sign in: OK
