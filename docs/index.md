@@ -5,6 +5,6 @@ title: Index
 
 ## What is Fable Powerpack ?
 
-It's a librairie providing utilities for Fable application.
+It's a library providing utilities for the Fable application.
 
 Here is the documentation for these tools:

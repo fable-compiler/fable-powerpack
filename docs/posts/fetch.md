@@ -41,6 +41,8 @@ We can write the same request using **Promise computation**.
 ## Send a POST request with data
 
 ```fs
+    open Fable.Core.JsInterop
+
     // This is the data we want to send to the server
     let data = {
         Username: "Maxime"
@@ -50,7 +52,7 @@ We can write the same request using **Promise computation**.
     let defaultProps =
         [ RequestProperties.Method HttpMethod.POST
         ; requestHeaders [ContentType "application/json"]
-        ; RequestProperties.Body unbox(toJson data)]
+        ; RequestProperties.Body <| unbox(toJson data)]
     
     promise {
         let! res = fetch "http://my-server.com/sign-in" defaultProps
