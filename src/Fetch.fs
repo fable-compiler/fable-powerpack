@@ -355,9 +355,6 @@ let fetch (url: string) (init: RequestProperties list) : JS.Promise<Response> =
 
 let tryFetch (url: string) (init: RequestProperties list) : JS.Promise<Result<Response, Exception>> =
     fetch url init |> Promise.result
-
-let tryOptionsRequest (url:string) : JS.Promise<Result<Response, Exception>> = 
-    fetch url [RequestProperties.Method HttpMethod.OPTIONS]  |> Promise.result
     
 /// Retrieves data from the specified resource, parses the json and returns the data as an object of type 'T.
 let  [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<'T> =
@@ -409,3 +406,7 @@ let patchRecord<'T> (url: string) (record:'T) (properties: RequestProperties lis
     // override the default ones if necessary
     List.append defaultProps properties
     |> fetch url
+
+/// Sends a HTTP OPTIONS request.
+let tryOptionsRequest (url:string) : JS.Promise<Result<Response, Exception>> = 
+    fetch url [RequestProperties.Method HttpMethod.OPTIONS]  |> Promise.result
