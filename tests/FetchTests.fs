@@ -94,3 +94,23 @@ describe "Fetch tests" <| fun _ ->
             | Error e -> e.Message)
         |> Promise.map (fun results ->
             results |> equal "request to http://this-must-be-an-invalid-url-no-really-i-mean-it.com failed, reason: getaddrinfo ENOTFOUND this-must-be-an-invalid-url-no-really-i-mean-it.com this-must-be-an-invalid-url-no-really-i-mean-it.com:80")
+
+    it "tryOptionsRequest: Successful HTTP OPTIONS request" <| fun () ->
+        let successMessage = "OPTIONS request accepted (method allowed)"
+        tryOptionsRequest "https://gandi.net"  
+        |> Promise.map (fun a ->
+            match a with
+            | Ok _ -> successMessage
+            | Error e -> e.Message)
+        |> Promise.map (fun results ->
+            results |> equal successMessage)
+
+    it "tryOptionsRequest: Failed HTTP OPTIONS request on Fable.io server" <| fun () ->
+        let failMessage = "OPTIONS request rejected (method not allowed)"
+        tryOptionsRequest "http://fable.io"  
+        |> Promise.map (fun a ->
+            match a with
+            | Ok a -> "ohoh? Fable.io allows OPTIONS request?"
+            | Error e -> failMessage)
+        |> Promise.map (fun results ->
+            results |> equal failMessage)
