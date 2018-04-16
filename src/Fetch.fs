@@ -263,14 +263,15 @@ module Fetch_types =
 
     [<StringEnum; RequireQualifiedAccess>]
     type HttpMethod =
+        | [<CompiledName("CONNECT")>] CONNECT
+        | [<CompiledName("DELETE")>] DELETE
         | [<CompiledName("GET")>] GET
         | [<CompiledName("HEAD")>] HEAD
+        | [<CompiledName("OPTIONS")>] OPTIONS
+        | [<CompiledName("PATCH")>] PATCH
         | [<CompiledName("POST")>] POST
         | [<CompiledName("PUT")>] PUT
-        | [<CompiledName("DELETE")>] DELETE
         | [<CompiledName("TRACE")>] TRACE
-        | [<CompiledName("CONNECT")>] CONNECT
-        | [<CompiledName("PATCH")>] PATCH
 
     type IHttpRequestHeaders =
         interface end
@@ -365,7 +366,6 @@ let  [<PassGenerics>] fetchAs<'T> (url: string) (init: RequestProperties list) :
 
 let  [<PassGenerics>] tryFetchAs<'T> (url: string) (init: RequestProperties list) : JS.Promise<Result<'T, Exception>> =
     fetchAs url init |> Promise.result
-
 
 /// Sends a HTTP post with the record serialized as JSON.
 /// This function already sets the HTTP Method to POST sets the json into the body.
