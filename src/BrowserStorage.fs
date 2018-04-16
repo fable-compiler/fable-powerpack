@@ -1,9 +1,9 @@
-module Fable.PowerPack.BrowserStorage
+namespace Fable.PowerPack
 
 open Fable.Import
 open Fable.Core.JsInterop
 
-module LocalStorage = 
+module BrowserLocalStorage  = 
 
   let inline load<'T> key =
       Browser.localStorage.getItem(key) |> unbox
@@ -15,7 +15,7 @@ module LocalStorage =
   let inline save<'T> key (data: 'T) =
       Browser.localStorage.setItem(key, toJson data)
 
-module SessionStorage = 
+module BrowserSessionStorage  = 
 
   let inline load<'T> key =
       Browser.sessionStorage.getItem(key) |> unbox
