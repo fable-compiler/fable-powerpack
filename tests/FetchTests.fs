@@ -67,7 +67,7 @@ describe "Fetch tests" <| fun _ ->
     it "tryFetch: Successful HTTP OPTIONS request" <| fun () ->
         let successMessage = "OPTIONS request accepted (method allowed)"
         let props = [ RequestProperties.Method HttpMethod.OPTIONS]
-        tryFetch "http://mockbin.org/bin/042d3a8c-edee-40ae-80f3-70ece6ae247e/view" props 
+        tryFetch "https://gandi.net" props 
         |> Promise.map (fun a ->
             match a with
             | Ok _ -> successMessage
