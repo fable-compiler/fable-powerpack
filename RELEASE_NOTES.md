@@ -1,3 +1,8 @@
+### 1.5.0
+
+* Add `tryOptionsRequest` (@whitetigle)
+* Added new BrowserStorage module (@whitetigle)
+
 ### 1.4.0
 
 * Extend `Date.Local` (@AkosLukacs)
