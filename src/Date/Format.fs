@@ -17,7 +17,7 @@ module Format =
         | DayOfWeek.Sunday -> local.Sunday
         | x -> failwithf "Not a valid day of week: %A" x
 
-    let internal mod12 x = x % 12
+    let internal mod12 x = if x = 12 || x = 0 then 12 else x % 12
 
     let internal fromMonth local month =
         match month with

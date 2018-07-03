@@ -72,6 +72,16 @@ describe "DateFormat tests" <| fun _ ->
             formatUK "h" testDate
             |> equal "3"
 
+        it "Noon works" <| fun () ->
+            let testDate = DateTime(2017, 8, 8, 12, 0, 0)
+            formatUK "h" testDate
+            |> equal "12"
+
+        it "Midnight works" <| fun () ->
+            let testDate = DateTime(2017, 8, 8, 0, 0, 0)
+            formatUK "h" testDate
+            |> equal "12"
+
     describe "Pattern 'hh': The hour, using a 12-hour clock from 01 to 12" <| fun () ->
         it "1 digit hour works" <| fun () ->
             let testDate = DateTime(2017, 8, 8, 1, 0, 0)
@@ -87,6 +97,16 @@ describe "DateFormat tests" <| fun _ ->
             let testDate = DateTime(2017, 8, 8, 15, 0, 0)
             formatUK "hh" testDate
             |> equal "03"
+
+        it "Noon works" <| fun () ->
+            let testDate = DateTime(2017, 8, 8, 12, 0, 0)
+            formatUK "hh" testDate
+            |> equal "12"
+
+        it "Midnight works" <| fun () ->
+            let testDate = DateTime(2017, 8, 8, 0, 0, 0)
+            formatUK "hh" testDate
+            |> equal "12"
 
     describe "Pattern 'H': The hour, using a 24-hour clock from 0 to 23" <| fun () ->
         it "1 digit hour works" <| fun () ->
