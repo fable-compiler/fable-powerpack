@@ -1,3 +1,7 @@
+### 1.5.1
+
+* Fix 12 hour format error (@Elonon)
+
 ### 1.5.0
 
 * Add `tryOptionsRequest` (@whitetigle)
