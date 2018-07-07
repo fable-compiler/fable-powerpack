@@ -3,11 +3,11 @@ layout: post
 title: Fetch
 ---
 
-Fetch is an API making request over network easier than with `XMLHttpRequest`. It's allow you to write your request using "pipeline" style.
+Fetch is an API making a request over a network easier than with `XMLHttpRequest`. It allows you to write your request using the "pipeline" style.
 
 ## Access
 
-To acces the fetch API, you need to use the following `open` declaration
+To access the fetch API, you need to use the following `open` declaration.
 
 ```fs
 open Fable.PowerPack
@@ -22,7 +22,7 @@ In the next snippet, we are getting the content of `http://fable.io` page.
     fetch "http://fable.io" []
     |> Promise.bind (fun res -> res.text())
     |> Promise.map (fun txt ->
-        // Access here your ressource
+        // Access here your resource
         Browser.console.log txt
     )
 ```
@@ -33,7 +33,7 @@ We can write the same request using **Promise computation**.
     promise {
         let! res = fetch "http://fable.io" []
         let! txt = res.text()
-        // Access here your ressource
+        // Access here your resource
         Browser.console.log txt
     }
 ```
@@ -65,9 +65,9 @@ We can write the same request using **Promise computation**.
     }    
 ```
 
-Fable Powerpack already implement some general helpers for you like:
+Fable PowerPack already implements some general helpers for you:
 
-- postRecord: Sends a HTTP post with the record serialized as JSON.
-- tryPostRecord: Sends a HTTP post with the record serialized as JSON. And encapsulate it into a `Result` case.
-- putRecord: Sends a HTTP put with the record serialized as JSON.
+- postRecord: Sends a HTTP POST with the record serialized as JSON.
+- tryPostRecord: Sends a HTTP POST with the record serialized as JSON and encapsulates it in a `Result` case.
+- putRecord: Sends a HTTP PUT with the record serialized as JSON.
 - etc.
