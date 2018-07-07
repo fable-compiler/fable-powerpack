@@ -16,13 +16,13 @@ open Fable.PowerPack.Fetch
 
 ## Basic
 
-In the next snippet, we are getting the content of `http://fable.io` page.
+In the next snippet, we are getting the content of the `http://fable.io` page.
 
 ```fs
     fetch "http://fable.io" []
     |> Promise.bind (fun res -> res.text())
     |> Promise.map (fun txt ->
-        // Access here your resource
+        // Access your resource here
         Browser.console.log txt
     )
 ```
@@ -33,7 +33,7 @@ We can write the same request using **Promise computation**.
     promise {
         let! res = fetch "http://fable.io" []
         let! txt = res.text()
-        // Access here your resource
+        // Access your resource here
         Browser.console.log txt
     }
 ```
