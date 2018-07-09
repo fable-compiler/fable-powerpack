@@ -10,7 +10,7 @@
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../Fable.PowerPack.fsproj" />
+    <ProjectReference Include="../src/Fable.PowerPack.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

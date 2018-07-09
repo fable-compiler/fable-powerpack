@@ -1,7 +1,4 @@
----
-layout: post
-title: Fetch
----
+# Fetch
 
 Fetch is an API making a request over a network easier than with `XMLHttpRequest`. It allows you to write your request using the "pipeline" style.
 
@@ -53,7 +50,7 @@ We can write the same request using **Promise computation**.
         [ RequestProperties.Method HttpMethod.POST
         ; requestHeaders [ContentType "application/json"]
         ; RequestProperties.Body <| unbox(toJson data)]
-    
+
     promise {
         let! res = fetch "http://my-server.com/sign-in" defaultProps
         let! txt = res.text()
@@ -62,7 +59,7 @@ We can write the same request using **Promise computation**.
             // Sign in: OK
         else
             // Sign in: Failed
-    }    
+    }
 ```
 
 Fable PowerPack already implements some general helpers for you:

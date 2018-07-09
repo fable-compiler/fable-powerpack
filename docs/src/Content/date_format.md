@@ -1,7 +1,4 @@
----
-layout: post
-title: Date Format
----
+# Date Format
 
 ## Basic
 

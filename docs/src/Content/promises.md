@@ -1,7 +1,4 @@
----
-layout: post
-title: Promise
----
+# Promise
 
 ## Basic promise
 
@@ -14,6 +11,6 @@ let add x y =
     promise {
         do! Promise.sleep 500 // Sleep for 500ms
         return x + y
-    } 
+    }
     |> Promise.start
 ```

@@ -1,12 +1,33 @@
-// include Fake libs
-#r "./packages/build/FAKE/tools/FakeLib.dll"
-#r "System.IO.Compression.FileSystem"
-#load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
-#load "paket-files/build/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
+#r "paket: groupref netcorebuild //"
+#load ".fake/build.fsx/intellisense.fsx"
+#if !FAKE
+#r "netstandard"
+#r "Facades/netstandard"
+#endif
 
-open Fake
-open Fable.FakeHelpers
-open Octokit
+#nowarn "52"
+
+// // include Fake libs
+// #r "./packages/build/FAKE/tools/FakeLib.dll"
+// #r "System.IO.Compression.FileSystem"
+// #load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+// #load "paket-files/build/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
+
+open System
+open System.IO
+open System.Text.RegularExpressions
+open Fake.Core
+open Fake.Core.TargetOperators
+open Fake.DotNet
+open Fake.IO
+open Fake.IO.Globbing.Operators
+open Fake.IO.FileSystemOperators
+open Fake.Tools.Git
+open Fake.JavaScript
+
+// open Fake
+// open Fable.FakeHelpers
+// open Octokit
 
 #if MONO
 // prevent incorrect output encoding (e.g. https://github.com/fsharp/FAKE/issues/1196)
@@ -16,58 +37,162 @@ System.Console.OutputEncoding <- System.Text.Encoding.UTF8
 let project = "fable-powerpack"
 let gitOwner = "fable-compiler"
 
-let dotnetcliVersion = "2.1.301"
-let mutable dotnetExePath = environVarOrDefault "DOTNET" "dotnet"
+let versionFromGlobalJson : DotNet.CliInstallOptions -> DotNet.CliInstallOptions = (fun o ->
+        { o with Version = DotNet.Version (DotNet.getSDKVersionFromGlobalJson()) }
+    )
+
+let dotnetSdk = lazy DotNet.install versionFromGlobalJson
+let inline dtntWorkDir wd =
+    DotNet.Options.lift dotnetSdk.Value
+    >> DotNet.Options.withWorkingDirectory wd
+let inline dtntSmpl arg = DotNet.Options.lift dotnetSdk.Value arg
 
 let CWD = __SOURCE_DIRECTORY__
 
-module Yarn =
-    open YarnHelper
-
-    let install workingDir =
-        Yarn (fun p ->
-            { p with
-                Command = YarnCommand.Install InstallArgs.Standard
-                WorkingDirectory = workingDir
-            })
-
-    let run workingDir script args =
-        Yarn (fun p ->
-            { p with
-                Command = YarnCommand.Custom ("run " + script + " " + args)
-                WorkingDirectory = workingDir
-            })
-
 // Clean and install dotnet SDK
-Target "Bootstrap" (fun () ->
-    !! "bin" ++ "obj" ++ "tests/bin" ++ "tests/obj" |> CleanDirs
-    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
+Target.create "Bootstrap" (fun _ ->
+    !! "src/bin"
+    ++ "src/obj"
+    ++ "tests/bin"
+    ++ "tests/obj" |> Shell.cleanDirs
 )
 
-Target "Test" (fun () ->
-    Yarn.install CWD
-    Yarn.run CWD "test" ""
+Target.create "Restore" (fun _ ->
+    DotNet.restore (dtntWorkDir (CWD </> "tests")) ""
+    Yarn.install (fun o -> { o with WorkingDirectory = CWD })
 )
 
-Target "PublishPackages" (fun () ->
-    [ "Fable.PowerPack.fsproj"]
-    |> publishPackages CWD dotnetExePath
+Target.create "Test" (fun _ ->
+    let result = DotNet.exec (dtntWorkDir CWD) "fable" "webpack --port free -- --config tests/webpack.config.js"
+
+    if not result.OK then failwithf "Build of tests project failed."
+
+    Yarn.exec "mocha build" (fun o -> { o with WorkingDirectory = CWD })
 )
 
-Target "GitHubRelease" (fun () ->
-    let releasePath = CWD </> "RELEASE_NOTES.md"
-    githubRelease releasePath gitOwner project (fun user pw release ->
-        createClient user pw
-        |> createDraft gitOwner project release.NugetVersion
-            (release.SemVer.PreRelease <> None) release.Notes
-        |> releaseDraft
-        |> Async.RunSynchronously
+let docFsproj = "./docs/Docs.fsproj"
+let docs = CWD </> "docs"
+let docsContent = docs </> "src" </> "Content"
+let buildMain = docs </> "build" </> "src" </> "Main.js"
+
+let buildSass _ =
+    Yarn.exec "run node-sass --output-style compressed --output docs/public/ docs/scss/main.scss" id
+
+let applyAutoPrefixer _ =
+    Yarn.exec "run postcss docs/public/main.css --use autoprefixer -o docs/public/main.css" id
+
+Target.create "Docs.Watch" (fun _ ->
+    use watcher = new FileSystemWatcher(docsContent, "*.md")
+    watcher.IncludeSubdirectories <- true
+    watcher.EnableRaisingEvents <- true
+
+    watcher.Changed.Add(fun _ ->
+        Process.execSimple
+            (fun info ->
+                { info with
+                    FileName = "node"
+                    Arguments = buildMain }
+            )
+            (TimeSpan.FromSeconds 30.) |> ignore
     )
+
+    // Make sure the style is generated
+    // Watch mode of node-sass don't trigger a first build
+    buildSass ()
+
+    [ async {
+        let result = DotNet.exec (dtntWorkDir CWD) "fable" "yarn-run fable-splitter --port free -- -c docs/splitter.config.js -w"
+
+        if not result.OK then failwithf "Build of tests project failed."
+      }
+      async {
+        Yarn.exec "run node-sass --output-style compressed --watch --output docs/public/ docs/scss/main.scss" id
+      }
+    //   async {
+    //     Yarn.exec "run http-server -c-1 docs/public" id
+    //   }
+    ]
+    |> Async.Parallel
+    |> Async.RunSynchronously
+    |> ignore
+)
+
+Target.create "Docs.Setup" (fun _ ->
+    // Make sure directories exist
+    Directory.ensure "./docs/scss/extra/highlight.js/"
+    Directory.ensure "./docs/public/demos/"
+
+    // Copy files from node_modules allow us to manage them via yarn
+    Shell.copyDir "./docs/public/fonts" "./node_modules/font-awesome/fonts" (fun _ -> true)
+    Shell.copyFile "./docs/scss/extra/highlight.js/atom-one-light.css" "./node_modules/highlight.js/styles/atom-one-light.css"
+
+    DotNet.restore (dtntWorkDir (CWD </> "docs")) ""
+)
+
+Target.create "Docs.Build" (fun _ ->
+    let result = DotNet.exec (dtntWorkDir CWD) "fable" "yarn-run fable-splitter --port free -- -c docs/splitter.config.js -p"
+
+    if not result.OK then failwithf "Build of tests project failed."
+
+    buildSass ()
+    applyAutoPrefixer ()
+)
+
+// Target.create "PublishPackages" (fun _ ->
+//     [ "Fable.PowerPack.fsproj"]
+//     |> publishPackages CWD dotnetExePath
+// )
+
+// Target.create "GitHubRelease" (fun _ ->
+//     let releasePath = CWD </> "RELEASE_NOTES.md"
+//     githubRelease releasePath gitOwner project (fun user pw release ->
+//         createClient user pw
+//         |> createDraft gitOwner project release.NugetVersion
+//             (release.SemVer.PreRelease <> None) release.Notes
+//         |> releaseDraft
+//         |> Async.RunSynchronously
+//     )
+// )
+
+// "Bootstrap"
+// ==> "Test"
+// ==> "PublishPackages"
+// ==> "GitHubRelease"
+
+
+// Where to push generated documentation
+let githubLink = "https://github.com/fable-compiler/fable-powerpack.git"
+let publishBranch = "gh-pages"
+let temp = CWD </> "temp"
+
+Target.create "Docs.Publish" (fun _ ->
+    // Clean the repo before cloning this avoid potential conflicts
+    Shell.cleanDir temp
+    Repository.cloneSingleBranch "" githubLink publishBranch temp
+
+    // Copy new files
+    Shell.copyRecursive "docs/public" temp true |> printfn "%A"
+
+    // Deploy the new site
+    Staging.stageAll temp
+    Commit.exec temp (sprintf "Update site (%s)" (DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")))
+    Branches.push temp
 )
 
 "Bootstrap"
-==> "Test"
-==> "PublishPackages"
-==> "GitHubRelease"
+    ==> "Restore"
+    ==> "Test"
 
-RunTargetOrDefault "Bootstrap"
+"Docs.Setup"
+    <== [ "Restore" ]
+
+"Docs.Build"
+    <== [ "Docs.Setup" ]
+
+"Docs.Watch"
+    <== [ "Docs.Setup" ]
+
+"Docs.Build"
+    ==> "Docs.Publish"
+
+Target.runOrDefault "Bootstrap"

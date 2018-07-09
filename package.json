@@ -1,17 +1,32 @@
 {
-  "private": true,
-  "scripts": {
-    "postinstall": "dotnet restore && dotnet restore tests",
-    "pretest": "dotnet fable webpack --port free -- --config tests/webpack.config.js",
-    "test": "mocha build"
-  },
-  "devDependencies": {
-    "babel-core": "6.25.0",
-    "babel-loader": "7.0.0",
-    "babel-preset-es2015": "6.24.1",
-    "fable-loader": "1.0.4",
-    "isomorphic-fetch": "2.2.1",
-    "mocha": "3.4.2",
-    "webpack": "2.6.1"
-  }
+    "private": true,
+    "scripts": {},
+    "devDependencies": {
+        "autoprefixer": "^8.6.5",
+        "babel-core": "6.26.3",
+        "babel-loader": "7.1.5",
+        "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+        "babel-preset-es2015": "6.24.1",
+        "bulma": "^0.7.1",
+        "fable-loader": "1.1.6",
+        "fable-splitter": "^0.1.21",
+        "fable-utils": "^1.0.6",
+        "font-awesome": "^4.7.0",
+        "handlebars": "^4.0.11",
+        "highlight.js": "^9.12.0",
+        "isomorphic-fetch": "2.2.1",
+        "markdown-it": "^8.4.1",
+        "markdown-it-highlightjs": "^3.0.0",
+        "mocha": "5.2.0",
+        "node-sass": "^4.9.2",
+        "postcss-cli": "^5.0.1",
+        "react": "^16.4.1",
+        "react-dom": "^16.4.1",
+        "reload": "^2.3.0",
+        "string": "^3.3.3",
+        "webpack": "4.15.1"
+    },
+    "browserslist": [
+        "last 2 version"
+    ]
 }
