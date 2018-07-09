@@ -7,15 +7,11 @@
 
 #nowarn "52"
 
-// // include Fake libs
-// #r "./packages/build/FAKE/tools/FakeLib.dll"
-// #r "System.IO.Compression.FileSystem"
-// #load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
-// #load "paket-files/build/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
+#load "paket-files/netcorebuild/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+#load "paket-files/netcorebuild/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
 
 open System
 open System.IO
-open System.Text.RegularExpressions
 open Fake.Core
 open Fake.Core.TargetOperators
 open Fake.DotNet
@@ -25,14 +21,8 @@ open Fake.IO.FileSystemOperators
 open Fake.Tools.Git
 open Fake.JavaScript
 
-// open Fake
-// open Fable.FakeHelpers
-// open Octokit
-
-#if MONO
-// prevent incorrect output encoding (e.g. https://github.com/fsharp/FAKE/issues/1196)
-System.Console.OutputEncoding <- System.Text.Encoding.UTF8
-#endif
+open Fable.FakeHelpers
+open Octokit
 
 let project = "fable-powerpack"
 let gitOwner = "fable-compiler"
@@ -138,27 +128,22 @@ Target.create "Docs.Build" (fun _ ->
     applyAutoPrefixer ()
 )
 
-// Target.create "PublishPackages" (fun _ ->
-//     [ "Fable.PowerPack.fsproj"]
-//     |> publishPackages CWD dotnetExePath
-// )
+Target.create "PublishPackages" (fun _ ->
+    let sdk = dotnetSdk.Value (DotNet.Options.Create())
+    [ "Fable.PowerPack.fsproj" ]
+    |> publishPackages CWD sdk.DotNetCliPath
+)
 
-// Target.create "GitHubRelease" (fun _ ->
-//     let releasePath = CWD </> "RELEASE_NOTES.md"
-//     githubRelease releasePath gitOwner project (fun user pw release ->
-//         createClient user pw
-//         |> createDraft gitOwner project release.NugetVersion
-//             (release.SemVer.PreRelease <> None) release.Notes
-//         |> releaseDraft
-//         |> Async.RunSynchronously
-//     )
-// )
-
-// "Bootstrap"
-// ==> "Test"
-// ==> "PublishPackages"
-// ==> "GitHubRelease"
-
+Target.create "GitHubRelease" (fun _ ->
+    let releasePath = CWD </> "RELEASE_NOTES.md"
+    githubRelease releasePath gitOwner project (fun user pw release ->
+        createClient user pw
+        |> createDraft gitOwner project release.NugetVersion
+            (release.SemVer.PreRelease <> None) release.Notes
+        |> releaseDraft
+        |> Async.RunSynchronously
+    )
+)
 
 // Where to push generated documentation
 let githubLink = "https://github.com/fable-compiler/fable-powerpack.git"
@@ -182,6 +167,8 @@ Target.create "Docs.Publish" (fun _ ->
 "Bootstrap"
     ==> "Restore"
     ==> "Test"
+    ==> "PublishPackages"
+    ==> "GitHubRelease"
 
 "Docs.Setup"
     <== [ "Restore" ]

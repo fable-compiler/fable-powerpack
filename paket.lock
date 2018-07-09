@@ -568,21 +568,6 @@ NUGET
       System.Threading (>= 4.3) - restriction: || (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.3) (< win8) (< wpa81) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (< portable-net45+win8+wp8+wpa81)
       System.Xml.ReaderWriter (>= 4.3) - restriction: || (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.3) (< win8) (< wpa81) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net45) (>= netstandard1.0) (< netstandard1.3) (< win8) (< wp8) (< wpa81)) (< portable-net45+win8+wp8+wpa81)
 
-GROUP Build
-RESTRICTION: == net46
-NUGET
-  remote: https://www.nuget.org/api/v2
-    FAKE (5.1)
-    FSharp.Core (4.5) - content: none, redirects: force
-    Octokit (0.30)
-      SourceLink.Create.GitHub (>= 2.8)
-    SourceLink.Create.GitHub (2.8.3)
-GITHUB
-  remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (320bdd6c69725de15a7734cb40d0f6330b37ec64)
-      Octokit (>= 0.20)
-  remote: fable-compiler/fake-helpers
-    Fable.FakeHelpers.fs (2659db7061c051f1ed23c04bf21b234224374b16)
 GROUP Docs
 STORAGE: NONE
 RESTRICTION: == netstandard2.0
@@ -660,6 +645,7 @@ NUGET
       Fake.Core.Environment (>= 5.1)
       Fake.Core.FakeVar (>= 5.1)
       FSharp.Core (>= 4.3.4)
+    Fake.Core.UserInput (5.1)
     Fake.DotNet.Cli (5.1)
       Fake.Core.Environment (>= 5.1)
       Fake.Core.Process (>= 5.1)
@@ -712,9 +698,13 @@ NUGET
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
     Newtonsoft.Json (11.0.2)
+    Octokit (0.30)
+      NETStandard.Library (>= 1.6)
+      SourceLink.Create.GitHub (>= 2.8)
     runtime.native.System (4.3)
       Microsoft.NETCore.Platforms (>= 1.1)
       Microsoft.NETCore.Targets (>= 1.1)
+    SourceLink.Create.GitHub (2.8.3)
     System.Buffers (4.5)
     System.Collections (4.3)
       Microsoft.NETCore.Platforms (>= 1.1)
@@ -891,3 +881,16 @@ NUGET
     System.Threading.ThreadPool (4.3)
       System.Runtime (>= 4.3)
       System.Runtime.Handles (>= 4.3)
+GITHUB
+  remote: fable-compiler/fake-helpers
+    Fable.FakeHelpers.fs (1b26f2cd88aab4895b1d330edf30f3852ea81652)
+      Fake.Core.Process
+      Fake.Core.ReleaseNotes
+      Fake.Core.String
+      Fake.Core.UserInput
+      Fake.DotNet.Cli
+      Fake.IO.FileSystem
+      Fake.Tools.Git
+  remote: fsharp/FAKE
+    modules/Octokit/Octokit.fsx (320bdd6c69725de15a7734cb40d0f6330b37ec64)
+      Octokit (>= 0.20)
