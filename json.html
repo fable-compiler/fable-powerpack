@@ -1,0 +1,182 @@
+<!doctype html>
+<html class="has-navbar-fixed-top">
+
+<head>
+    <title>Fable.PowerPack: Json</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /> <link rel="stylesheet" type="text/css" href="http://fable.io/fable-powerpack/main.css"/>
+    <link rel="shortcut icon" href="http://fable.io/fable-powerpack/assets/favicon-16x16.png"></link>
+</head>
+
+<body>
+    <nav class="navbar is-fixed-top is-thoth-primary"><div class="bd-special-shadow" style="opacity:1;transform:scaleY(1)"></div><div class="container"><div class="navbar-brand"><a class="navbar-item" href="http://fable.io/fable-powerpack/index.html"><p class="title is-4">Fable.PowerPack</p></a><a class="navbar-item is-hidden-desktop" href="https://github.com/fable-compiler/fable-powerpack"><span class="icon"><i class="fa  fa-github fa-lg"></i></span></a><a class="navbar-item twitter is-hidden-desktop" href="https://twitter.com/FableCompiler"><span class="icon"><i class="fa  fa-twitter fa-lg"></i></span></a><div class="navbar-burger"><span></span><span></span><span></span></div></div><div class="navbar-menu" id="navMenu"><a class="navbar-item" href="http://fable.io/fable-powerpack/date-format.html">Date format</a><a class="navbar-item" href="http://fable.io/fable-powerpack/fetch.html">Fetch</a><a class="navbar-item is-active" href="http://fable.io/fable-powerpack/json.html">Json</a><a class="navbar-item" href="http://fable.io/fable-powerpack/promise.html">Promises</a></div><div class="navbar-end"><a class="navbar-item is-hidden-mobile" href="https://github.com/fable-compiler/fable-powerpack"><span class="icon"><i class="fa  fa-github fa-lg"></i></span></a><a class="navbar-item twitter is-hidden-mobile" href="https://twitter.com/FableCompiler"><span class="icon"><i class="fa  fa-twitter fa-lg"></i></span></a><div class="navbar-item"><div class="field is-grouped"><p class="control"><a class="button twitter" href="https://twitter.com/FableCompiler" target="_blank"><span class="icon"><i class="fa  fa-twitter fa-lg"></i></span><span>Tweet</span></a></p><p class="control"><a class="button github" href="https://github.com/fable-compiler/fable-powerpack"><span class="icon"><i class="fa  fa-github fa-lg"></i></span><span>Github</span></a></p></div></div></div></div></nav>
+    <div class="container">
+        <div class="content" style="margin: 1rem 0 0">
+            <h1><a href="#json" aria-hidden="true"><span class="anchor" id="json"></span>#</a> Json</h1>
+<p>The Json utility allow you to parse any Json object via pattern matching.</p>
+<p>You can either use classic function style or computation expression to parse your Json.</p>
+<p>For next samples we will consider the following types:</p>
+<pre><code class="hljs language-fs"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">UserDef</span> </span>=
+    { firstname : string
+      country : string }
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">JsonDef</span> </span>=
+    { size : int
+      users : UserDef list }
+</code></pre>
+<p>The json to parse is:</p>
+<pre><code class="hljs language-fs"><span class="hljs-keyword">let</span> jsonTxt =
+    <span class="hljs-string">"""
+{
+    "size": 3,
+    "users": [
+        {
+            "firstname": "Maxime",
+            "country": "France"
+        },
+        {
+            "firstname": "Alfonso",
+            "country": "Spain"
+        },
+        {
+            "firstname": "Forki",
+            "country": "Germany"
+        }
+    ]
+}
+    """</span>
+</code></pre>
+<h2><a href="#using-standard-function" aria-hidden="true"><span class="anchor" id="using-standard-function"></span>#</a> Using standard function</h2>
+<pre><code class="hljs language-fs">
+<span class="hljs-comment">// Helpers function to unwrap a Json value</span>
+<span class="hljs-keyword">let</span> unwrapNumber a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.Number a -&gt; a
+    | _ -&gt; failwith <span class="hljs-string">"Invalid JSON, it must be a number"</span>
+
+<span class="hljs-keyword">let</span> unwrapString a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.String a -&gt; a
+    | _ -&gt; failwith <span class="hljs-string">"Invalid JSON, it must be a string"</span>
+
+<span class="hljs-keyword">let</span> unwrapObject a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.Object a -&gt; Map.ofArray a
+    | _ -&gt; failwith <span class="hljs-string">"Invalid JSON, it must be an object"</span>
+
+<span class="hljs-keyword">let</span> unwrapArray a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.Array a -&gt; a
+    | _ -&gt; failwith <span class="hljs-string">"Invalid JSON, it must be an array"</span>
+
+<span class="hljs-comment">// Convert the Json string into Json DU</span>
+<span class="hljs-keyword">let</span> json = jsonTxt |&gt; Json.ofString |&gt; unwrapResult |&gt; unwrapObject
+
+<span class="hljs-keyword">let</span> sizeValue = json |&gt; Map.find <span class="hljs-string">"size"</span> |&gt; unwrapNumber
+<span class="hljs-keyword">let</span> users = json |&gt; Map.find <span class="hljs-string">"users"</span> |&gt; unwrapArray
+
+<span class="hljs-keyword">let</span> userList =
+    [ <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> users <span class="hljs-keyword">do</span>
+        <span class="hljs-keyword">let</span> obj = user |&gt; unwrapObject
+        <span class="hljs-keyword">let</span> firstname = obj |&gt; Map.find <span class="hljs-string">"firstname"</span> |&gt; unwrapString
+        <span class="hljs-keyword">let</span> country = obj |&gt; Map.find <span class="hljs-string">"country"</span> |&gt; unwrapString
+        <span class="hljs-keyword">yield</span> { firstname = firstname
+                country = country }
+    ]
+
+{ size = int sizeValue
+  users = userList } <span class="hljs-comment">// Here we have our json extracted</span>
+</code></pre>
+<h2><a href="#using-computation-expression" aria-hidden="true"><span class="anchor" id="using-computation-expression"></span>#</a> Using computation expression</h2>
+<pre><code class="hljs language-fs">
+<span class="hljs-comment">// Helpers to extract the Json values into a Result type</span>
+<span class="hljs-keyword">let</span> number a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.Number a -&gt; Ok(a)
+    | _ -&gt; Error(System.Exception(<span class="hljs-string">"Invalid JSON, it must be a number"</span>))
+
+<span class="hljs-keyword">let</span> string a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.String a -&gt; Ok(a)
+    | _ -&gt; Error(System.Exception(<span class="hljs-string">"Invalid JSON, it must be a string"</span>))
+
+<span class="hljs-keyword">let</span> lookup (key: string) (a: Map&lt;string, Json.Json&gt;) =
+    <span class="hljs-keyword">match</span> Map.tryFind key a <span class="hljs-keyword">with</span>
+    | Some(a) -&gt; Ok(a)
+    | None -&gt; Error(System.Exception(<span class="hljs-string">"Could not find key "</span> + key))
+
+<span class="hljs-keyword">let</span> object a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.Object a -&gt; Ok(Map.ofArray a)
+    | _ -&gt; Error(System.Exception(<span class="hljs-string">"Invalid JSON, it must be an object"</span>))
+
+<span class="hljs-keyword">let</span> array a =
+    <span class="hljs-keyword">match</span> a <span class="hljs-keyword">with</span>
+    | Json.Array a -&gt; Ok(a)
+    | _ -&gt; Error(System.Exception(<span class="hljs-string">"Invalid JSON, it must be an array"</span>))
+
+
+result {
+    <span class="hljs-keyword">let!</span> json = jsonTxt |&gt; Json.ofString |&gt; Result.bind object
+
+    <span class="hljs-keyword">let!</span> sizeValue = json |&gt; lookup <span class="hljs-string">"size"</span> |&gt; Result.bind number
+    <span class="hljs-keyword">let!</span> users = json |&gt; lookup <span class="hljs-string">"users"</span> |&gt; Result.bind array
+
+    <span class="hljs-keyword">let</span> userList =
+        seq {
+            <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> users -&gt;
+                result {
+                    <span class="hljs-keyword">let!</span> obj = user |&gt; object
+                    <span class="hljs-keyword">let!</span> firstname = obj |&gt; lookup <span class="hljs-string">"firstname"</span> |&gt; Result.bind string
+                    <span class="hljs-keyword">let!</span> country = obj |&gt; lookup <span class="hljs-string">"country"</span> |&gt; Result.bind string
+                    <span class="hljs-keyword">return</span> { firstname = firstname
+                             country = country }
+                }
+        }
+        <span class="hljs-comment">// Make sure all the users are valid</span>
+        |&gt; Seq.map unwrapResult
+
+    <span class="hljs-keyword">return</span> { size = int sizeValue
+             users = List.ofSeq userList }
+}
+<span class="hljs-comment">// We unwrap the result</span>
+<span class="hljs-comment">// Make sure the parser succeeded</span>
+|&gt; unwrapResult
+</code></pre>
+
+        </div>
+    </div>
+    <div><br/><div class="footer has-text-centered"><div class="container"><div class="content"><p><strong>Fable.PowerPack</strong> by <a href="https://twitter.com/FableCompiler">Fable</a></p>
+<p>Powered by <a href="https://mangelmaxime.github.io/Fulma/">Fulma</a> and <a href="https://github.com/fable-compiler/static-page-generator">Fable static-page-generator</a>.</p>
+</div></div></div></div>
+    <script type="text/javascript">
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Get all "navbar-burger" elements
+            var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+            // Check if there are any navbar burgers
+            if ($navbarBurgers.length > 0) {
+
+                // Add a click event on each of them
+                $navbarBurgers.forEach(function ($el) {
+                    $el.addEventListener('click', function () {
+
+                        var $target = document.getElementById("navMenu");
+
+                        // Toggle the class on both the "navbar-burger" and the "navbar-menu"
+                        $el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+
+                    });
+                });
+            }
+
+        });
+
+    </script>
+</body>
+
+</html>
