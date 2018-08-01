@@ -1,3 +1,7 @@
+### 2.0.0-beta-001
+
+* Fable 2
+
 ### 1.5.1
 
 * Fix 12 hour format error (@Elonon)

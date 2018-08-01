@@ -10,4 +10,4 @@ then
 fi
 
 dotnet restore build.proj
-dotnet fake $@
+dotnet fake run build.fsx $@
