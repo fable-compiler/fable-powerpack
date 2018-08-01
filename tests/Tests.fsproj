@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PromiseTests.fs" />
     <Compile Include="FetchTests.fs" />
-    <Compile Include="JsonTests.fs" />
     <Compile Include="DateFormatTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>

@@ -2,27 +2,32 @@ namespace Fable.PowerPack
 
 open Fable.Import
 open Fable.Core.JsInterop
+open Thoth.Json
 
-module BrowserLocalStorage  = 
+module BrowserLocalStorage  =
 
-  let inline load<'T> key =
-      Browser.localStorage.getItem(key) |> unbox
-      |> Option.map ofJson<'T>
+  let load (decoder: Decode.Decoder<'T>) key: Result<'T,string> =
+      let o = Browser.localStorage.getItem(key) :?> string
+      if isNull o
+      then "No item found in local storage with key " + key |> Error
+      else Decode.fromString decoder o
 
-  let inline delete key =
+  let delete key =
       Browser.localStorage.removeItem(key)
 
-  let inline save<'T> key (data: 'T) =
-      Browser.localStorage.setItem(key, toJson data)
+  let save key (data: 'T) =
+      Browser.localStorage.setItem(key, Encode.Auto.toString 0 data)
 
-module BrowserSessionStorage  = 
+module BrowserSessionStorage  =
 
-  let inline load<'T> key =
-      Browser.sessionStorage.getItem(key) |> unbox
-      |> Option.map ofJson<'T>
+  let load (decoder: Decode.Decoder<'T>) key: Result<'T,string> =
+      let o = Browser.sessionStorage.getItem(key) :?> string
+      if isNull o
+      then "No item found in local storage with key " + key |> Error
+      else Decode.fromString decoder o
 
-  let inline delete key =
+  let delete key =
       Browser.sessionStorage.removeItem(key)
 
-  let inline save<'T> key (data: 'T) =
-      Browser.sessionStorage.setItem(key, toJson data)
+  let save key (data: 'T) =
+      Browser.localStorage.setItem(key, Encode.Auto.toString 0 data)

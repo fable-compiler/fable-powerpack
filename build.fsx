@@ -53,7 +53,7 @@ Target.create "Restore" (fun _ ->
 )
 
 Target.create "Test" (fun _ ->
-    let result = DotNet.exec (dtntWorkDir CWD) "fable" "webpack --port free -- --config tests/webpack.config.js"
+    let result = DotNet.exec (dtntWorkDir CWD) "fable" "webpack-cli -- --config webpack.test.config.js"
 
     if not result.OK then failwithf "Build of tests project failed."
 
@@ -91,7 +91,7 @@ Target.create "Docs.Watch" (fun _ ->
     buildSass ()
 
     [ async {
-        let result = DotNet.exec (dtntWorkDir CWD) "fable" "yarn-run fable-splitter --port free -- -c docs/splitter.config.js -w"
+        let result = DotNet.exec (dtntWorkDir CWD) "fable" "yarn-run fable-splitter -- -c docs/splitter.config.js -w"
 
         if not result.OK then failwithf "Build of tests project failed."
       }
@@ -120,7 +120,7 @@ Target.create "Docs.Setup" (fun _ ->
 )
 
 Target.create "Docs.Build" (fun _ ->
-    let result = DotNet.exec (dtntWorkDir CWD) "fable" "yarn-run fable-splitter --port free -- -c docs/splitter.config.js -p"
+    let result = DotNet.exec (dtntWorkDir CWD) "fable" "yarn-run fable-splitter -- -c docs/splitter.config.js -p"
 
     if not result.OK then failwithf "Build of tests project failed."
 
@@ -130,12 +130,12 @@ Target.create "Docs.Build" (fun _ ->
 
 Target.create "PublishPackages" (fun _ ->
     let sdk = dotnetSdk.Value (DotNet.Options.Create())
-    [ "Fable.PowerPack.fsproj" ]
+    [ "src/Fable.PowerPack.fsproj" ]
     |> publishPackages CWD sdk.DotNetCliPath
 )
 
 Target.create "GitHubRelease" (fun _ ->
-    let releasePath = CWD </> "RELEASE_NOTES.md"
+    let releasePath = CWD </> "src/RELEASE_NOTES.md"
     githubRelease releasePath gitOwner project (fun user pw release ->
         createClient user pw
         |> createDraft gitOwner project release.NugetVersion
@@ -164,11 +164,13 @@ Target.create "Docs.Publish" (fun _ ->
     Branches.push temp
 )
 
-"Bootstrap"
-    ==> "Restore"
-    ==> "Test"
-    ==> "PublishPackages"
-    ==> "GitHubRelease"
+// "Bootstrap"
+//     ==> "Restore"
+//     ==> "Test"
+//     ==>
+
+// "PublishPackages"
+//     ==> "GitHubRelease"
 
 "Docs.Setup"
     <== [ "Restore" ]
@@ -182,4 +184,4 @@ Target.create "Docs.Publish" (fun _ ->
 "Docs.Build"
     ==> "Docs.Publish"
 
-Target.runOrDefault "Bootstrap"
+Target.runOrDefault "Test"

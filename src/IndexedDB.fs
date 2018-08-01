@@ -34,19 +34,15 @@ type DBCursorDirection =
         | Prev -> "prev"
         | PrevUnique -> "prevunique"
 
-[<PassGenerics>]
-let createStore<'T,'TKey>(keyMethod: DBKeyMethod<'T,'TKey>) (db: Browser.IDBDatabase) =
+let inline createStore<'T,'TKey>(keyMethod: DBKeyMethod<'T,'TKey>) (db: Browser.IDBDatabase) =
     let args = createEmpty<Browser.IDBObjectStoreParameters>
     match keyMethod with
     | KeyPath path -> args.keyPath <- Some(U2.Case1 path)
     | AutoIncrement -> args.autoIncrement <- Some true
-    let storeName = typeof<'T>.Name
-    db.createObjectStore(storeName, args)
+    db.createObjectStore(typeof<'T>.Name, args)
 
-[<PassGenerics>]
-let deleteStore<'T>(db: Browser.IDBDatabase) =
-    let storeName = typeof<'T>.Name
-    db.deleteObjectStore(storeName)
+let inline deleteStore<'T>(db: Browser.IDBDatabase) =
+    db.deleteObjectStore(typeof<'T>.Name)
 
 type IDBImplementation =
     abstract member Version: uint32
@@ -217,16 +213,15 @@ type Browser.IDBObjectStore with
         )
 
 type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
-    [<PassGenerics>]
-    member x.DeleteDatabase() =
+    member inline x.DeleteDatabase() =
         Promise.create(fun cont econt ->
             let name = typeof<'T>.Name
             let request = Browser.indexedDB.deleteDatabase(name)
             request.onerror <- fun _ -> box(econt(exn request.error.name))
             request.onsuccess <- fun _ -> box(cont())
         )
-    [<PassGenerics>]
-    member private x.Use(mkTransaction: Browser.IDBDatabase->Browser.IDBTransaction) (execTransaction: Browser.IDBTransaction->JS.Promise<'Result>) =
+
+    member inline private x.Use(mkTransaction: Browser.IDBDatabase->Browser.IDBTransaction) (execTransaction: Browser.IDBTransaction->JS.Promise<'Result>) =
         Promise.create(fun cont econt ->
             let impl = new 'T() :> IDBImplementation
             let name = typeof<'T>.Name
@@ -255,8 +250,8 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
                 | e -> econt(e)
                 null
         )
-    [<PassGenerics; CompiledName("UseStoreReadOnly1")>]
-    member x.UseStore<'S1,'Result>(transaction: Browser.IDBObjectStore->JS.Promise<'Result>) =
+
+    member inline x.UseStore<'S1,'Result>(transaction: Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let mkTransaction = fun (db: Browser.IDBDatabase) ->
             db.transaction(U2.Case1 storeName1, "readonly")
@@ -264,8 +259,8 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             let store1 = trans.objectStore(storeName1)
             transaction store1
         x.Use mkTransaction execTransaction
-    [<PassGenerics; CompiledName("UseStoreReadOnly2")>]
-    member x.UseStore<'S1,'S2,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
+
+    member inline x.UseStore<'S1,'S2,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let storeName2 = typeof<'S2>.Name
         let mkTransaction = fun (db: Browser.IDBDatabase) ->
@@ -275,8 +270,8 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             let store2 = trans.objectStore(storeName2)
             transaction store1 store2
         x.Use mkTransaction execTransaction
-    [<PassGenerics; CompiledName("UseStoreReadOnly3")>]
-    member x.UseStore<'S1,'S2,'S3,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
+
+    member inline x.UseStore<'S1,'S2,'S3,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let storeName2 = typeof<'S2>.Name
         let storeName3 = typeof<'S3>.Name
@@ -288,8 +283,8 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             let store3 = trans.objectStore(storeName3)
             transaction store1 store2 store3
         x.Use mkTransaction execTransaction
-    [<PassGenerics; CompiledName("UseStoreReadOnly4")>]
-    member x.UseStore<'S1,'S2,'S3,'S4,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
+
+    member inline x.UseStore<'S1,'S2,'S3,'S4,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let storeName2 = typeof<'S2>.Name
         let storeName3 = typeof<'S3>.Name
@@ -304,8 +299,7 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             transaction store1 store2 store3 store4
         x.Use mkTransaction execTransaction
 
-    [<PassGenerics; CompiledName("UseStoreReadWrite1")>]
-    member x.UseStoreRW<'S1,'Result>(transaction: Browser.IDBObjectStore->JS.Promise<'Result>) =
+    member inline x.UseStoreRW<'S1,'Result>(transaction: Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let mkTransaction = fun (db: Browser.IDBDatabase) ->
             db.transaction(U2.Case1 storeName1, "readwrite")
@@ -314,8 +308,7 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             transaction store1
         x.Use mkTransaction execTransaction
 
-    [<PassGenerics; CompiledName("UseStoreReadWrite2")>]
-    member x.UseStoreRW<'S1,'S2,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
+    member inline x.UseStoreRW<'S1,'S2,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let storeName2 = typeof<'S2>.Name
         let mkTransaction = fun (db: Browser.IDBDatabase) ->
@@ -326,8 +319,7 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             transaction store1 store2
         x.Use mkTransaction execTransaction
 
-    [<PassGenerics; CompiledName("UseStoreReadWrite3")>]
-    member x.UseStoreRW<'S1,'S2,'S3,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
+    member inline x.UseStoreRW<'S1,'S2,'S3,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let storeName2 = typeof<'S2>.Name
         let storeName3 = typeof<'S3>.Name
@@ -339,8 +331,8 @@ type IndexedDB<'T when 'T :> IDBImplementation and 'T : (new: unit->'T)>() =
             let store3 = trans.objectStore(storeName3)
             transaction store1 store2 store3
         x.Use mkTransaction execTransaction
-    [<PassGenerics; CompiledName("UseStoreReadWrite4")>]
-    member x.UseStoreRW<'S1,'S2,'S3,'S4,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
+
+    member inline x.UseStoreRW<'S1,'S2,'S3,'S4,'Result>(transaction: Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->Browser.IDBObjectStore->JS.Promise<'Result>) =
         let storeName1 = typeof<'S1>.Name
         let storeName2 = typeof<'S2>.Name
         let storeName3 = typeof<'S3>.Name
