@@ -1,7 +1,6 @@
 namespace Fable.PowerPack
 
 open Fable.Import
-open Fable.Core.JsInterop
 open Thoth.Json
 
 module BrowserLocalStorage  =
@@ -16,7 +15,7 @@ module BrowserLocalStorage  =
       Browser.localStorage.removeItem(key)
 
   let save key (data: 'T) =
-      Browser.localStorage.setItem(key, Encode.Auto.toString 0 data)
+      Browser.localStorage.setItem(key, Encode.Auto.toString(0, data))
 
 module BrowserSessionStorage  =
 
@@ -30,4 +29,4 @@ module BrowserSessionStorage  =
       Browser.sessionStorage.removeItem(key)
 
   let save key (data: 'T) =
-      Browser.localStorage.setItem(key, Encode.Auto.toString 0 data)
+      Browser.localStorage.setItem(key, Encode.Auto.toString(0, data))

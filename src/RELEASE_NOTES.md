@@ -1,3 +1,7 @@
+### 2.0.0-beta-004
+
+* Update to Thoth.Json 2.0.0-beta-004
+
 ### 2.0.0-beta-003
 
 * Fable 2

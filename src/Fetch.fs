@@ -374,7 +374,7 @@ let private sendRecord (url: string) (record:'T) (properties: RequestProperties 
     let defaultProps =
         [ RequestProperties.Method httpMethod
           requestHeaders [ContentType "application/json"]
-          RequestProperties.Body !^(Encode.Auto.toString 0 record)]
+          RequestProperties.Body !^(Encode.Auto.toString(0, record))]
     // Append properties after defaultProps to make sure user-defined values
     // override the default ones if necessary
     List.append defaultProps properties
