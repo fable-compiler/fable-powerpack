@@ -1,3 +1,11 @@
+### 2.0.1
+
+* Update deps
+
+### 2.0.0
+
+* Stable version for Fable 2
+
 ### 2.0.0-beta-004
 
 * Update to Thoth.Json 2.0.0-beta-004

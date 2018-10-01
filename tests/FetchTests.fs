@@ -17,9 +17,6 @@ let it (msg: string) (f: unit->JS.Promise<'T>): unit = jsNative
 [<Global>]
 let describe (msg: string) (f: unit->unit): unit = jsNative
 
-// Fetch polyfill for node
-JsInterop.importAll "isomorphic-fetch"
-
 describe "Fetch tests" <| fun _ ->
     it "fetch: requests work" <| fun () ->
         let getWebPageLength url =
@@ -67,7 +64,7 @@ describe "Fetch tests" <| fun _ ->
     it "tryFetch: Successful HTTP OPTIONS request" <| fun () ->
         let successMessage = "OPTIONS request accepted (method allowed)"
         let props = [ RequestProperties.Method HttpMethod.OPTIONS]
-        tryFetch "https://gandi.net" props 
+        tryFetch "https://gandi.net" props
         |> Promise.map (fun a ->
             match a with
             | Ok _ -> successMessage
@@ -78,7 +75,7 @@ describe "Fetch tests" <| fun _ ->
     it "tryFetch: Failed HTTP OPTIONS request on Fable.io server" <| fun () ->
         let failMessage = "OPTIONS request rejected (method not allowed)"
         let props = [ RequestProperties.Method HttpMethod.OPTIONS]
-        tryFetch "http://fable.io" props 
+        tryFetch "http://fable.io" props
         |> Promise.map (fun a ->
             match a with
             | Ok a -> "ohoh? Fable.io allows OPTIONS request?"
@@ -97,7 +94,7 @@ describe "Fetch tests" <| fun _ ->
 
     it "tryOptionsRequest: Successful HTTP OPTIONS request" <| fun () ->
         let successMessage = "OPTIONS request accepted (method allowed)"
-        tryOptionsRequest "https://gandi.net"  
+        tryOptionsRequest "https://gandi.net"
         |> Promise.map (fun a ->
             match a with
             | Ok _ -> successMessage
@@ -107,7 +104,7 @@ describe "Fetch tests" <| fun _ ->
 
     it "tryOptionsRequest: Failed HTTP OPTIONS request on Fable.io server" <| fun () ->
         let failMessage = "OPTIONS request rejected (method not allowed)"
-        tryOptionsRequest "http://fable.io"  
+        tryOptionsRequest "http://fable.io"
         |> Promise.map (fun a ->
             match a with
             | Ok a -> "ohoh? Fable.io allows OPTIONS request?"

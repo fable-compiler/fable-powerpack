@@ -283,7 +283,7 @@ describe "Promise tests" <| fun _ ->
             |> Promise.map (fun x ->
                 x |> equal 5
             )
-    
+
     it "Promise can be run in parallel with andFor extension" <| fun () ->
         let one = Promise.lift 1
         let two = Promise.lift 2
