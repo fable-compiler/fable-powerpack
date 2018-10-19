@@ -29,4 +29,4 @@ module BrowserSessionStorage  =
       Browser.sessionStorage.removeItem(key)
 
   let save key (data: 'T) =
-      Browser.localStorage.setItem(key, Encode.Auto.toString(0, data))
+      Browser.sessionStorage.setItem(key, Encode.Auto.toString(0, data))
