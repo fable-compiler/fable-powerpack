@@ -361,14 +361,22 @@ let fetchAs<'T> (url: string) (decoder: Decode.Decoder<'T>) (init: RequestProper
     |> Promise.bind (fun response ->
         if not response.Ok
         then errorString response |> failwith
-        else response.json() |> Promise.map (Decode.unwrap "$" decoder))
+        else 
+            response.text() 
+            |> Promise.map (fun res ->
+                match Decode.fromString decoder res with
+                | Ok successValue -> successValue
+                | Error error -> failwith error))
+
 
 let tryFetchAs (url: string) (decoder: Decode.Decoder<'T>) (init: RequestProperties list) : JS.Promise<Result<'T, string>> =
     GlobalFetch.fetch(RequestInfo.Url url, requestProps init)
     |> Promise.bind (fun response ->
         if not response.Ok
         then errorString response |> Error |> Promise.lift
-        else response.json() |> Promise.map (Decode.fromValue "$" decoder))
+        else 
+            response.text()
+            |> Promise.map (Decode.fromString decoder))
 
 let private sendRecord (url: string) (record:'T) (properties: RequestProperties list) httpMethod : JS.Promise<Response> =
     let defaultProps =
