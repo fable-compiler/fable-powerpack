@@ -1,3 +1,7 @@
+### 2.0.2
+
+* Fix internal implementation of `fetchAs` and `tryFetchAs`
+
 ### 2.0.1
 
 * Update deps
