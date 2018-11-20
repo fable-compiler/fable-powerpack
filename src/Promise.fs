@@ -122,10 +122,26 @@ module Promise =
         member x.TryWith(p: JS.Promise<'T>, catchHandler: Exception->JS.Promise<'T>): JS.Promise<'T> = jsNative
 
         member x.Delay(generator: unit->JS.Promise<'T>): JS.Promise<'T> =
-            
+            !!createObj[
+                "then" ==> fun f1 f2 ->
+                    try generator()?``then``(f1,f2)
+                    with er ->
+                        if box f2 = null
+                        then !!JS.Promise.reject(er)
+                        else
+                            try !!JS.Promise.resolve(f2(er))
+                            with er -> !!JS.Promise.reject(er)
+                "catch" ==> fun f ->
+                    try generator()?catch(f)
+                    with er ->
+                        try !!JS.Promise.resolve(f(er))
+                        with er -> !!JS.Promise.reject(er)
+            ]
+
+        member x.Run(p:JS.Promise<'T>): JS.Promise<'T> =
             create (fun success fail ->
                 try
-                    let p : JS.Promise<'T> = !!JS.Promise.resolve(generator())
+                    let p : JS.Promise<'T> = !!JS.Promise.resolve(p)
                     p?``then``(success, fail)
                 with
                   er -> fail(er)
