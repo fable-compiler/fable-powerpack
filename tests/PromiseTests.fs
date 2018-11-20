@@ -311,3 +311,14 @@ describe "Promise tests" <| fun _ ->
             result |> equal true
             ()
         )
+
+    it "Promise does not re-execute multiple times" <| fun () ->
+        let mutable promiseExecutionCount = 0
+        let p = promise {
+            promiseExecutionCount <- promiseExecutionCount + 1
+            return 1
+        }
+        
+        p.``then``(fun _ -> promiseExecutionCount |> equal 1)
+        p.``then``(fun _ -> promiseExecutionCount |> equal 1)
+        p.``then``(fun _ -> promiseExecutionCount |> equal 1)
