@@ -125,8 +125,8 @@ module Promise =
             
             create (fun success fail ->
                 try
-                    let x = !!JS.Promise.resolve(generator())
-                    success(x)
+                    let p : JS.Promise<'T> = !!JS.Promise.resolve(generator())
+                    p?``then``(success, fail)
                 with
                   er -> fail(er)
             )
