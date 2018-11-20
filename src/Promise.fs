@@ -122,40 +122,14 @@ module Promise =
         member x.TryWith(p: JS.Promise<'T>, catchHandler: Exception->JS.Promise<'T>): JS.Promise<'T> = jsNative
 
         member x.Delay(generator: unit->JS.Promise<'T>): JS.Promise<'T> =
-
-            // the promise should behave like a JS promise:
-            //  * NOT started immediatly, only after the first continuation has been attached.
-            //  * cached, so that if multiple continuations attach, they all get the same result.
-            let generated = lazy ( try generator() |> Ok with exn -> exn |> Error )
-
-            !!createObj[
-                "then" ==> fun f1 f2 ->
-
-                    let onFail er =
-                        if box f2 = null
-                        then !!JS.Promise.reject(er)
-                        else
-                            try !!JS.Promise.resolve(f2(er))
-                            with er -> !!JS.Promise.reject(er)
-                    
-                    match generated.Value with
-                    | Ok g ->
-                        try g?``then``(f1,f2)
-                        with er -> onFail er
-                    | Error er -> onFail er
-
-                "catch" ==> fun f ->
-
-                    let onFail er =
-                        try !!JS.Promise.resolve(f(er))
-                        with er -> !!JS.Promise.reject(er)
-
-                    match generated.Value with
-                    | Ok g -> 
-                        try g?catch(f)
-                        with er -> onFail er
-                    | Error er -> onFail er
-            ]
+            
+            create (fun success fail ->
+                try
+                    let x = !!JS.Promise.resolve(generator())
+                    success(x)
+                with
+                  er -> fail(er)
+            )
 
         member x.Using<'T, 'R when 'T :> IDisposable>(resource: 'T, binder: 'T->JS.Promise<'R>): JS.Promise<'R> =
             x.TryFinally(binder(resource), fun () -> resource.Dispose())
