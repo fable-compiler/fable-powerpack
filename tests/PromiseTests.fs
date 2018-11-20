@@ -322,3 +322,21 @@ describe "Promise tests" <| fun _ ->
         p.``then``(fun _ -> promiseExecutionCount |> equal 1)
         p.``then``(fun _ -> promiseExecutionCount |> equal 1)
         p.``then``(fun _ -> promiseExecutionCount |> equal 1)
+
+    it "Promise is hot" <| fun () ->
+        let mutable promiseExecutionCount = 0
+
+        // start a promise
+        let _ = promise {
+            promiseExecutionCount <- promiseExecutionCount + 1
+            return 1
+        }
+        
+        // wait a bit, then check that the first promise was executed.
+        let delayed = Promise.create(fun ok er ->
+            JS.setTimeout (fun () -> ok()) 10 (* ms *) |> ignore
+        )
+
+        delayed.``then``(fun _ -> promiseExecutionCount |> equal 1)
+        
+
