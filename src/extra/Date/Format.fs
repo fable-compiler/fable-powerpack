@@ -39,7 +39,7 @@ module Format =
 
     let inline internal padWithN n c =  (fun (x: string) -> x.PadLeft(n, c)) << string
 
-    let internal padWith =  padWithN 2
+    let internal padWith = padWithN 2
 
     let internal takeLastChars count (str : string) =
         str.Substring(Math.Max(0, str.Length - count))
@@ -47,7 +47,7 @@ module Format =
     let localFormat (local : Localization) formatString (date : DateTime) =
         Regex.Replace(
             formatString,
-            "(d{1,4})|(h{1,2})|(H{1,2})|(m{1,2})|(M{1,4})|(s{1,2})|(t{1,2})|(y{1,5})|(\\\.?)",
+            @"(d{1,4})|(h{1,2})|(H{1,2})|(m{1,2})|(M{1,4})|(s{1,2})|(t{1,2})|(y{1,5})|(\\.?)",
             MatchEvaluator((fun token ->
                 let symbol = token.Groups.[0]
                 // If we escape the next character

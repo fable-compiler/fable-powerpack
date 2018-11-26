@@ -6,6 +6,8 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
 
+importSideEffects "isomorphic-fetch"
+
 let inline equal (expected: 'T) (actual: 'T): unit =
     Testing.Assert.AreEqual(expected, actual)
 
@@ -318,9 +320,9 @@ describe "Promise tests" <| fun _ ->
             promiseExecutionCount <- promiseExecutionCount + 1
             return 1
         }
-        
-        p.``then``(fun _ -> promiseExecutionCount |> equal 1)
-        p.``then``(fun _ -> promiseExecutionCount |> equal 1)
+
+        p.``then``(fun _ -> promiseExecutionCount |> equal 1) |> ignore
+        p.``then``(fun _ -> promiseExecutionCount |> equal 1) |> ignore
         p.``then``(fun _ -> promiseExecutionCount |> equal 1)
 
     it "Promise is hot" <| fun () ->
@@ -331,12 +333,10 @@ describe "Promise tests" <| fun _ ->
             promiseExecutionCount <- promiseExecutionCount + 1
             return 1
         }
-        
+
         // wait a bit, then check that the first promise was executed.
         let delayed = Promise.create(fun ok er ->
             JS.setTimeout (fun () -> ok()) 10 (* ms *) |> ignore
         )
 
         delayed.``then``(fun _ -> promiseExecutionCount |> equal 1)
-        
-

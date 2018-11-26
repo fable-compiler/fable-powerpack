@@ -1,6 +1,9 @@
 {
     "private": true,
-    "scripts": {},
+    "scripts": {
+        "pretest": "fable-splitter -c tests/splitter.config.js",
+        "test": "mocha build -t 10000"
+    },
     "devDependencies": {
         "@babel/core": "^7.0.0",
         "@babel/plugin-transform-modules-commonjs": "^7.0.0",
@@ -8,8 +11,9 @@
         "autoprefixer": "^9.1.5",
         "babel-loader": "^8.0.0",
         "bulma": "^0.7.1",
+        "fable-compiler": "^2.1.0-beta-005",
         "fable-loader": "2.0.0",
-        "fable-splitter": "^0.1.21",
+        "fable-splitter": "^2.1.0-beta-005",
         "fable-utils": "^1.2.0",
         "font-awesome": "^4.7.0",
         "handlebars": "^4.0.12",

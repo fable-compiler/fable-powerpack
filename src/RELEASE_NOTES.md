@@ -1,3 +1,7 @@
+### 3.0.0
+
+* Make `promise` computation expression behave like JS promises (hot and cached) #61 @0x53A
+
 ### 2.0.2
 
 * Fix internal implementation of `fetchAs` and `tryFetchAs`

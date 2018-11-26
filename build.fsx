@@ -53,11 +53,7 @@ Target.create "Restore" (fun _ ->
 )
 
 Target.create "Test" (fun _ ->
-    let result = DotNet.exec (dtntWorkDir CWD) "fable" "webpack-cli -- --config webpack.test.config.js"
-
-    if not result.OK then failwithf "Build of tests project failed."
-
-    Yarn.exec "mocha build" (fun o -> { o with WorkingDirectory = CWD })
+    Yarn.exec "test" (fun o -> { o with WorkingDirectory = CWD })
 )
 
 let docFsproj = "./docs/Docs.fsproj"
@@ -129,9 +125,8 @@ Target.create "Docs.Build" (fun _ ->
 )
 
 Target.create "PublishPackages" (fun _ ->
-    let sdk = dotnetSdk.Value (DotNet.Options.Create())
     [ "src/Fable.PowerPack.fsproj" ]
-    |> publishPackages CWD sdk.DotNetCliPath
+    |> publishPackages CWD "dotnet"
 )
 
 Target.create "GitHubRelease" (fun _ ->
