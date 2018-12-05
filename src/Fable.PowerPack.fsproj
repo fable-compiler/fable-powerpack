@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Keyboard.fs" />
-    <Compile Include="BrowserStorage.fs" />
+    <!-- <Compile Include="BrowserStorage.fs" /> -->
     <Compile Include="Result.fs" />
     <Compile Include="Promise.fs" />
     <Compile Include="Fetch.fs" />
