@@ -2,4 +2,4 @@
 
 Utilities for Fable apps.
 
-Type `./fake.sh` to run tests locally.
+**ATTENTION**: Modules have been published as standalone packages (see #63). Fable.PowerPack won't receive more updates.
